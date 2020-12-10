@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html class="ocks-org do-not-copy">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+  <title>Advent of Code 2020</title>
+  <meta name="description" content="Solutions to the problems from Advent of Code 2020.">
+  <link rel="icon" href="web/favicon.png">
+  <link rel="stylesheet" href="web/default.min.css">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Advent of Code 2020 solutions">
+  <meta name="twitter:description" content="Solutions to the problems from Advent of Code 2020.">
+  <meta name="twitter:image" content="https://gto76.github.io/python-cheatsheet/web/image_social_3.png">
+  <!-- <meta name="google-site-verification" content="w3rvuG0D1kUm_w20qsJecSEZh59Am8jK4eSPVU83e_M" /> -->
+  <meta name="viewport" id="viewport-meta">
+</head>
+
+<style>
+@import url(web/style.css);
+
+@font-face {font-family: "Menlo Regular";
+  src: url("web\\OnlineWebFonts_COM_cb7eb796ae7de7195a34c485cacebad1\\@font-face\\9f94dc20bb2a09c15241d3a880b7ad01.woff2") format("woff2"), /* chrome、firefox */
+  url("web\\OnlineWebFonts_COM_cb7eb796ae7de7195a34c485cacebad1\\@font-face\\9f94dc20bb2a09c15241d3a880b7ad01.woff") format("woff");
+}
+
+.join,
+.link,
+.node rect {
+  fill: none;
+  stroke: #636363;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #969696;
+}
+
+.node rect {
+  fill: white;
+}
+
+.link path,
+.node rect,
+.node text,
+.join {
+  -webkit-transition: stroke-opacity 500ms linear, fill-opacity 500ms linear;
+  -moz-transition: stroke-opacity 500ms linear, fill-opacity 500ms linear;
+  -ms-transition: stroke-opacity 500ms linear, fill-opacity 500ms linear;
+  -o-transition: stroke-opacity 500ms linear, fill-opacity 500ms linear;
+  transition: stroke-opacity 500ms linear, fill-opacity 500ms linear;
+}
+
+.node .element rect {
+  fill: #bdbdbd;
+  stroke: none;
+}
+
+.node .null rect {
+  fill: none;
+  stroke: none;
+}
+
+.node .null text {
+  fill: #636363;
+}
+
+.node .selection rect {
+  stroke: #e6550d;
+}
+
+.node .data rect {
+  stroke: #3182bd;
+}
+
+.node .datum rect {
+  fill: #d9d9d9;
+  stroke: none;
+}
+
+.node .code text {
+  font-family: monospace;
+}
+
+.node .key rect {
+  fill: #a1d99b;
+  stroke: none;
+}
+
+.link .to-key,
+.join {
+  stroke: #a1d99b;
+}
+
+.join {
+  stroke-dasharray: 2,2;
+}
+
+.link .to-null {
+  stroke-dasharray: .5,3.5;
+  stroke-linecap: round;
+}
+
+.link .from-data {
+  stroke: #3182bd;
+}
+
+.play circle {
+  fill: #fff;
+  stroke: #000;
+  stroke-width: 3px;
+}
+
+.play:hover path {
+  fill: #f00;
+}
+
+.play.mousedown circle {
+  fill: #f00;
+}
+
+.play.mousedown path {
+  fill: #fff;
+}
+
+.play rect {
+  fill: none;
+  pointer-events: all;
+  cursor: pointer;
+}
+
+code span {
+  -webkit-transition: background 250ms linear;
+  -moz-transition: background 250ms linear;
+  -ms-transition: background 250ms linear;
+  -o-transition: background 250ms linear;
+  transition: background 250ms linear;
+}
+
+pre.prettyprint, code.prettyprint {
+  background-color: #222;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+pre.prettyprint {
+  width: 90%;
+  margin: 0.5em;
+  padding: 1em;
+  white-space: pre-wrap;
+}
+
+#return-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgb(0, 0, 0);
+  background: rgba(0, 0, 0, 0.2);
+  width: 50px;
+  height: 50px;
+  display: block;
+  text-decoration: none;
+  -webkit-border-radius: 35px;
+  -moz-border-radius: 35px;
+  border-radius: 35px;
+  display: none;
+  -webkit-transition: all 0.3s linear;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+#return-to-top i {
+  color: #fff;
+  margin: 0;
+  position: relative;
+  left: 16px;
+  top: 13px;
+  font-size: 19px;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+#return-to-top:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+#return-to-top:hover i {
+   color: #f0f0f0;
+}
+
+@media print {
+  .pagebreak { 
+    page-break-before: always; 
+  } 
+  div {
+    page-break-inside: avoid;
+  }
+  pre {
+    page-break-inside: avoid;
+  }
+}
+
+.modebar{
+  display: none !important;
+}
+</style>
+
+<body>
+  <header>
+    <aside>December 10, 2020</aside>
+    <a href="https://gto76.github.io" rel="author">Jure Šorn</a>
+  </header>
+
+  <a href="javascript:" id="return-to-top"><i class="icon-chevron-up"></i></a>
+   <div><h1 id="adventofcode2020">Advent of Code 2020</h1><div><h2 id="day1"><a href="#day1" name="day1">#</a>Day 1</h2><pre><code class="text language-text">1721
+979
+366
+299
+675
+1456
+</code></pre></div></div>
+
+
+<pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_1_a</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''Find the two entries that sum to 2020; what do you get if you multiply them together?
+    514579'''</span>
+    <span class="hljs-keyword">import</span> itertools
+    numbers = [int(line) <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines]
+    <span class="hljs-keyword">for</span> l, r <span class="hljs-keyword">in</span> itertools.combinations(numbers, <span class="hljs-number">2</span>):
+        <span class="hljs-keyword">if</span> l + r == <span class="hljs-number">2020</span>:
+            <span class="hljs-keyword">return</span> l * r
+</code></pre>
+<pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_1_b</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''In your expense report, what is the product of the three entries that sum to 2020?
+    241861950'''</span>
+    <span class="hljs-keyword">import</span> itertools
+    numbers = [int(line) <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines]
+    <span class="hljs-keyword">for</span> a, b, c <span class="hljs-keyword">in</span> itertools.combinations(numbers, <span class="hljs-number">3</span>):
+        <span class="hljs-keyword">if</span> a + b + c == <span class="hljs-number">2020</span>:
+            <span class="hljs-keyword">return</span> a * b * c
+</code></pre>
+<div><h2 id="day2"><a href="#day2" name="day2">#</a>Day 2</h2><pre><code class="text language-text">1-3 a: abcde
+1-3 b: cdefg
+2-9 c: ccccccccc
+</code></pre></div>
+
+<pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_2_a</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''How many passwords are valid according to their policies? 2'''</span>
+    <span class="hljs-keyword">import</span> re
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">is_valid</span><span class="hljs-params">(line)</span>:</span>
+        min_, max_, letter, password = re.match(<span class="hljs-string">'^(\d+)-(\d+) (\w): (\w+)$'</span>, line).groups()
+        <span class="hljs-keyword">return</span> int(min_) &lt;= password.count(letter) &lt;= int(max_)
+    <span class="hljs-keyword">return</span> sum(is_valid(line) <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines)
+</code></pre>
+<pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_2_b</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''How many passwords are valid according to the new interpretation of the policies? 1'''</span>
+    <span class="hljs-keyword">import</span> re
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">is_valid</span><span class="hljs-params">(line)</span>:</span>
+        i_1, i_2, letter, password = re.match(<span class="hljs-string">'^(\d+)-(\d+) (\w): (\w+)$'</span>, line).groups()
+        <span class="hljs-keyword">return</span> (password[int(i_1)<span class="hljs-number">-1</span>] == letter) + (password[int(i_2)<span class="hljs-number">-1</span>] == letter) == <span class="hljs-number">1</span>
+    <span class="hljs-keyword">return</span> sum(is_valid(line) <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines)
+</code></pre>
+<div><h2 id="day3"><a href="#day3" name="day3">#</a>Day 3</h2><pre><code class="text language-text">..##.......
+#...#...#..
+.#....#..#.
+..#.#...#.#
+.#...##..#.
+..#.##.....
+.#.#.#....#
+.#........#
+#.##...#...
+#...##....#
+.#..#...#.#
+</code></pre></div>
+
+<pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_3_a</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''Starting at the top-left corner of your map and following a slope of right 3 and down 1,
+    how many trees would you encounter? 7'''</span>
+    <span class="hljs-keyword">import</span> collections
+    P = collections.namedtuple(<span class="hljs-string">'P'</span>, <span class="hljs-string">'x y'</span>)
+    positions = (P(x=y*<span class="hljs-number">3</span>, y=y) <span class="hljs-keyword">for</span> y <span class="hljs-keyword">in</span> range(len(lines)))
+    is_tree = <span class="hljs-keyword">lambda</span> p: lines[p.y][p.x % len(lines[<span class="hljs-number">0</span>])] == <span class="hljs-string">'#'</span>
+    <span class="hljs-keyword">return</span> sum(is_tree(p) <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> positions)
+</code></pre>
+<pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_3_b</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''What do you get if you multiply together the number of trees encountered on each of the
+    listed slopes? 336'''</span>
+    <span class="hljs-keyword">import</span> collections, functools, itertools, operator
+    P = collections.namedtuple(<span class="hljs-string">'P'</span>, <span class="hljs-string">'x y'</span>)
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_positions</span><span class="hljs-params">(slope)</span>:</span>
+        x_generator = itertools.count(start=<span class="hljs-number">0</span>, step=slope.x)
+        <span class="hljs-keyword">return</span> (P(next(x_generator), y) <span class="hljs-keyword">for</span> y <span class="hljs-keyword">in</span> range(<span class="hljs-number">0</span>, len(lines), slope.y))
+    is_tree = <span class="hljs-keyword">lambda</span> p: lines[p.y][p.x % len(lines[<span class="hljs-number">0</span>])] == <span class="hljs-string">'#'</span>
+    count_trees = <span class="hljs-keyword">lambda</span> slope: sum(is_tree(p) <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> get_positions(slope))
+    slopes = [P(x=<span class="hljs-number">1</span>, y=<span class="hljs-number">1</span>), P(x=<span class="hljs-number">3</span>, y=<span class="hljs-number">1</span>), P(x=<span class="hljs-number">5</span>, y=<span class="hljs-number">1</span>), P(x=<span class="hljs-number">7</span>, y=<span class="hljs-number">1</span>), P(x=<span class="hljs-number">1</span>, y=<span class="hljs-number">2</span>)]
+    <span class="hljs-keyword">return</span> functools.reduce(operator.mul, (count_trees(slope) <span class="hljs-keyword">for</span> slope <span class="hljs-keyword">in</span> slopes))
+</code></pre>
+<div><h2 id="day4"><a href="#day4" name="day4">#</a>Day 4</h2><pre><code class="text language-text">ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
+byr:1937 iyr:2017 cid:147 hgt:183cm
+
+iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884
+hcl:#cfa07d byr:1929
+
+hcl:#ae17e1 iyr:2013
+eyr:2024
+ecl:brn pid:760753108 byr:1931
+hgt:179cm
+
+hcl:#cfa07d eyr:2025 pid:166559648
+iyr:2011 ecl:brn hgt:59in
+</code></pre></div>
+
+<pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_4_a</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''In your batch file, how many passports are valid? 2'''</span>
+    passports = <span class="hljs-string">' '</span>.join(lines).split(<span class="hljs-string">'  '</span>)
+    get_keys = <span class="hljs-keyword">lambda</span> passport: {item.split(<span class="hljs-string">':'</span>)[<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> passport.split()}
+    is_valid = <span class="hljs-keyword">lambda</span> passport: len(get_keys(passport) - {<span class="hljs-string">'cid'</span>}) == <span class="hljs-number">7</span>
+    <span class="hljs-keyword">return</span> sum(is_valid(p) <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> passports)
+</code></pre>
+<pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_4_b</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''In your batch file, how many passports are valid? 2'''</span>
+    <span class="hljs-keyword">import</span> re
+    RULES = dict(
+        byr=<span class="hljs-keyword">lambda</span> v: <span class="hljs-number">1920</span> &lt;= int(v) &lt;= <span class="hljs-number">2002</span>,
+        iyr=<span class="hljs-keyword">lambda</span> v: <span class="hljs-number">2010</span> &lt;= int(v) &lt;=  <span class="hljs-number">2020</span>,
+        eyr=<span class="hljs-keyword">lambda</span> v: <span class="hljs-number">2020</span> &lt;= int(v) &lt;=  <span class="hljs-number">2030</span>,
+        hgt=<span class="hljs-keyword">lambda</span> v: <span class="hljs-number">150</span> &lt;= int(v[:<span class="hljs-number">-2</span>]) &lt;= <span class="hljs-number">193</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'cm'</span> <span class="hljs-keyword">in</span> v <span class="hljs-keyword">else</span> <span class="hljs-number">59</span> &lt;= int(v[:<span class="hljs-number">-2</span>]) &lt;= <span class="hljs-number">76</span>,
+        hcl=<span class="hljs-keyword">lambda</span> v: re.match(<span class="hljs-string">'#[0-9a-f]{6}$'</span>, v) != <span class="hljs-keyword">None</span>,
+        ecl=<span class="hljs-keyword">lambda</span> v: v <span class="hljs-keyword">in</span> <span class="hljs-string">'amb blu brn gry grn hzl oth'</span>.split(),
+        pid=<span class="hljs-keyword">lambda</span> v: re.match(<span class="hljs-string">'\d{9}$'</span>, v) != <span class="hljs-keyword">None</span>
+    )
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">is_field_valid</span><span class="hljs-params">(key, value)</span>:</span>
+        <span class="hljs-keyword">try</span>:
+            <span class="hljs-keyword">return</span> RULES[key](value)
+        <span class="hljs-keyword">except</span> Exception:
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">is_passport_valid</span><span class="hljs-params">(passport)</span>:</span>
+        <span class="hljs-keyword">return</span> sum(is_field_valid(*item.split(<span class="hljs-string">':'</span>)) <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> passport.split()) == <span class="hljs-number">7</span>
+    passports = <span class="hljs-string">' '</span>.join(lines).split(<span class="hljs-string">'  '</span>)
+    <span class="hljs-keyword">return</span> sum(is_passport_valid(p) <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> passports)
+</code></pre>
+<div><h2 id="day5"><a href="#day5" name="day5">#</a>Day 5</h2><pre><code class="text language-text">BBFFBBFLLR
+BBFFBBFLRL
+BBFFBBFRLL
+</code></pre></div>
+
+<pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_5_a</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''What is the highest seat ID on a boarding pass? 820'''</span>
+    get_bin = <span class="hljs-keyword">lambda</span> code: <span class="hljs-string">''</span>.join(<span class="hljs-string">'0'</span> <span class="hljs-keyword">if</span> ch <span class="hljs-keyword">in</span> <span class="hljs-string">'FL'</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'1'</span> <span class="hljs-keyword">for</span> ch <span class="hljs-keyword">in</span> code)
+    get_id  = <span class="hljs-keyword">lambda</span> code: int(get_bin(code), <span class="hljs-number">2</span>)
+    <span class="hljs-keyword">return</span> max(get_id(code) <span class="hljs-keyword">for</span> code <span class="hljs-keyword">in</span> lines)
+</code></pre>
+<pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_5_b</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''What is the ID of your seat? 819'''</span>
+    get_bin   = <span class="hljs-keyword">lambda</span> code: <span class="hljs-string">''</span>.join(<span class="hljs-string">'0'</span> <span class="hljs-keyword">if</span> ch <span class="hljs-keyword">in</span> <span class="hljs-string">'FL'</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'1'</span> <span class="hljs-keyword">for</span> ch <span class="hljs-keyword">in</span> code)
+    get_id    = <span class="hljs-keyword">lambda</span> code: int(get_bin(code), <span class="hljs-number">2</span>)
+    taken_ids = {get_id(code) <span class="hljs-keyword">for</span> code <span class="hljs-keyword">in</span> lines}
+    all_ids   = range(min(taken_ids), max(taken_ids)+<span class="hljs-number">1</span>)
+    <span class="hljs-keyword">return</span> (set(all_ids) - taken_ids).pop()
+</code></pre>
+<div><h2 id="day6"><a href="#day6" name="day6">#</a>Day 6</h2><pre><code class="text language-text">abc
+
+a
+b
+c
+
+ab
+ac
+
+a
+a
+a
+a
+
+b
+</code></pre></div>
+
+<pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_6_a</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''For each group, count the number of questions to which anyone answered "yes". What is
+    the sum of those counts? 11'''</span>
+    groups = <span class="hljs-string">' '</span>.join(lines).split(<span class="hljs-string">'  '</span>)
+    <span class="hljs-keyword">return</span> sum(len(set(group) - {<span class="hljs-string">' '</span>}) <span class="hljs-keyword">for</span> group <span class="hljs-keyword">in</span> groups)
+
+
+<span class="hljs-comment"># def problem_6_a(lines):</span>
+<span class="hljs-comment">#     '''For each group, count the number of questions to which anyone answered "yes". What is</span>
+<span class="hljs-comment">#     the sum of those counts? 11'''</span>
+<span class="hljs-comment">#     groups = ' '.join(lines).split('  ')</span>
+<span class="hljs-comment">#     count_groups_answers = lambda group: len(set(group.replace(' ', '')))</span>
+<span class="hljs-comment">#     return sum(count_groups_answers(group) for group in groups)</span>
+
+
+<span class="hljs-comment"># def problem_6_a(lines):</span>
+<span class="hljs-comment">#     '''For each group, count the number of questions to which anyone answered "yes". What is</span>
+<span class="hljs-comment">#     the sum of those counts? 11'''</span>
+<span class="hljs-comment">#     groups = ' '.join(lines).split('  ')</span>
+<span class="hljs-comment">#     get_groups_answers = lambda group: set(group.replace(' ', ''))</span>
+<span class="hljs-comment">#     return sum(len(get_groups_answers(group)) for group in groups)</span>
+
+
+<span class="hljs-comment"># def problem_6_a(lines):</span>
+<span class="hljs-comment">#     '''For each group, count the number of questions to which anyone answered "yes". What is</span>
+<span class="hljs-comment">#     the sum of those counts? 11'''</span>
+<span class="hljs-comment">#     groups = ' '.join(lines).split('  ')</span>
+<span class="hljs-comment">#     get_groups_answers = lambda group: set(group) - {' '}</span>
+<span class="hljs-comment">#     return sum(len(get_groups_answers(group)) for group in groups)</span>
+</code></pre>
+<pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_6_b</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''For each group, count the number of questions to which everyone answered "yes". What is
+    the sum of those counts? 6'''</span>
+    <span class="hljs-keyword">import</span> functools, operator
+    groups             = <span class="hljs-string">' '</span>.join(lines).split(<span class="hljs-string">'  '</span>)
+    split_group        = <span class="hljs-keyword">lambda</span> group: [set(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> group.split(<span class="hljs-string">' '</span>)]
+    get_common_answers = <span class="hljs-keyword">lambda</span> group: functools.reduce(operator.and_, split_group(group))
+    <span class="hljs-keyword">return</span> sum(len(get_common_answers(group)) <span class="hljs-keyword">for</span> group <span class="hljs-keyword">in</span> groups)
+
+
+<span class="hljs-comment"># def problem_6_b(lines):</span>
+<span class="hljs-comment">#     '''For each group, count the number of questions to which everyone answered "yes". What is</span>
+<span class="hljs-comment">#     the sum of those counts? 6'''</span>
+<span class="hljs-comment">#     import functools, operator</span>
+<span class="hljs-comment">#     groups         = ' '.join(lines).split('  ')</span>
+<span class="hljs-comment">#     get_people     = lambda group: [set(a) for a in group.split(' ')]</span>
+<span class="hljs-comment">#     common_answers = [functools.reduce(operator.and_, get_people(group)) for group in groups]</span>
+<span class="hljs-comment">#     return sum(len(a) for a in common_answers)</span>
+
+
+<span class="hljs-comment"># def problem_6_b(lines):</span>
+<span class="hljs-comment">#     '''For each group, count the number of questions to which everyone answered "yes". What is</span>
+<span class="hljs-comment">#     the sum of those counts? 6'''</span>
+<span class="hljs-comment">#     import functools, operator</span>
+<span class="hljs-comment">#     groups = ' '.join(lines).split('  ')</span>
+<span class="hljs-comment">#     split_group        = lambda group: [set(a) for a in group.split(' ')]</span>
+<span class="hljs-comment">#     get_common_answers = lambda group: functools.reduce(operator.and_, split_group(group))</span>
+<span class="hljs-comment">#     return sum(len(get_common_answers(group)) for group in groups)</span>
+
+
+<span class="hljs-comment"># def problem_6_b(lines):</span>
+<span class="hljs-comment">#     '''For each group, count the number of questions to which everyone answered "yes". What is</span>
+<span class="hljs-comment">#     the sum of those counts? 6'''</span>
+<span class="hljs-comment">#     import functools, operator</span>
+<span class="hljs-comment">#     groups = ' '.join(lines).split('  ')</span>
+<span class="hljs-comment">#     split_group = lambda group: [set(a) for a in group.split(' ')]</span>
+<span class="hljs-comment">#     get_common_answers = lambda group: functools.reduce(operator.and_, split_group(group))</span>
+<span class="hljs-comment">#     return sum(len(get_common_answers(group)) for group in groups)</span>
+</code></pre> 
+
+  <footer>
+    <aside>December 10, 2020</aside>
+    <a href="../" rel="author">Jure Šorn</a>
+  </footer>
+
+  <script src="web/jquery-3.4.0.min.js"></script>
+  <script src="web/script_2.js"></script>
+</body>
+</html>
