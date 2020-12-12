@@ -368,6 +368,231 @@ def problem_8_b(lines):
     return main()
 
 
+###
+##  DAY 9
+#
+
+IN_9 = \
+'''20
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+21
+22
+23
+24
+25
+45
+65'''
+
+
+def problem_9_a(lines):
+    '''The first step of attacking the weakness in the XMAS data is to find the first number in
+    the list (after the preamble) which is not the sum of two of the 25 numbers before it. What
+    is the first number that does not have this property? 65'''
+    import itertools
+    def is_sum(candidate, numbers):
+        for pair in itertools.combinations(numbers, 2):
+            if sum(pair) == candidate:
+                return True
+    numbers = [int(line) for line in lines]
+    for i in range(25, len(numbers)):
+        if not is_sum(numbers[i], numbers[i-25:i]):
+            return numbers[i]
+
+
+def problem_9_b(lines):
+    '''What is the encryption weakness in your XMAS-encrypted list of numbers? 21'''
+    invalid_number = problem_9_a(lines)
+    numbers = [int(line) for line in lines]
+    for i in range(len(numbers)):
+        for j in range(i+2, len(numbers)+1):
+            sum_ = sum(numbers[i:j])
+            if sum_ == invalid_number:
+                return min(numbers[i:j]) + max(numbers[i:j])
+            elif sum_ > invalid_number:
+                break
+
+
+###
+##  DAY 10
+#
+
+IN_10 = \
+'''28
+33
+18
+42
+31
+14
+46
+20
+48
+47
+24
+23
+49
+45
+19
+38
+39
+11
+1
+32
+25
+35
+8
+17
+7
+9
+4
+2
+34
+10
+3'''
+
+
+def problem_10_a(lines):
+    '''What is the number of 1-jolt differences multiplied by the number of 3-jolt differences?
+    220'''
+    numbers = [0] + sorted(int(a) for a in lines)
+    deltas = [b-a for a, b in zip(numbers, numbers[1:])]
+    return deltas.count(1) * (deltas.count(3)+1)
+
+
+def problem_10_b(lines):
+    '''What is the total number of distinct ways you can arrange the adapters to connect the 
+    charging outlet to your device? 19208'''
+    import functools, operator as op
+    numbers = sorted(int(a) for a in lines)
+    numbers = [0] + numbers + [numbers[-1]+3]
+    deltas = [b-a for a, b in zip(numbers, numbers[1:])]
+    d = ''.join(str(a) for a in deltas)
+    dd = [[1, 2, 4, 7, 13, 23][len(a)-1] for a in d.split('3') if a]
+    return functools.reduce(op.mul, dd)
+
+
+###
+##  DAY 11
+#
+
+IN_11 = \
+'''L.LL.LL.LL
+LLLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLLL
+L.LLLLLL.L
+L.LLLLL.LL'''
+
+
+def problem_11_a(lines):
+    '''Simulate your seating area by applying the seating rules repeatedly until no seats
+    change state. How many seats end up occupied? 37'''
+    import collections
+    P = collections.namedtuple('P', 'x y')
+
+    def main():
+        layout = {P(x, y): ch for y, line in enumerate(lines) for x, ch in enumerate(line)}
+        while True:
+            new_layout = step(layout)
+            if new_layout == layout:
+                return list(layout.values()).count('#')
+            layout = new_layout
+
+    def step(layout):
+        out = dict(layout)
+        for p, ch in layout.items():
+            adjecent_chars = [layout.get(a) for a in get_adjecent_positions(p)]
+            if ch == 'L' and '#' not in adjecent_chars:
+                out[p] = '#'
+            elif ch == '#' and adjecent_chars.count('#') >= 4:
+                out[p] = 'L'
+        return out
+
+    def get_adjecent_positions(p):
+        deltas = [P(-1, -1), P(0, -1), P(1, -1), P(-1, 0), P(1, 0), P(-1, 1), P(0, 1), P(1, 1)]
+        return (P(p.x + delta.x, p.y + delta.y) for delta in deltas)
+
+    return main()
+
+
+def problem_11_b(lines):
+    '''Given the new visibility method and the rule change for occupied seats becoming empty, 
+    once equilibrium is reached, how many seats end up occupied? 26'''
+    import collections
+    P = collections.namedtuple('P', 'x y')
+
+    layout = {P(x, y): ch for y, line in enumerate(lines) for x, ch in enumerate(line)}
+
+    def main():
+        nonlocal layout
+        while True:
+            new_layout = {p: get_new_ch(p, ch) for p, ch in layout.items()}
+            if new_layout == layout:
+                return list(layout.values()).count('#')
+            layout = new_layout
+
+    def get_new_ch(p, ch):
+        directions = [P(-1, -1), P(0, -1), P(1, -1), P(-1, 0), P(1, 0), P(-1, 1), P(0, 1), 
+                      P(1, 1)]
+        visible_chairs = [get_visible_chair(p, direction) for direction in directions]
+        if ch == 'L' and '#' not in visible_chairs:
+            return '#'
+        elif ch == '#' and visible_chairs.count('#') >= 5:
+            return 'L'
+        return ch
+
+    def get_visible_chair(p, direction):
+        while p in layout:
+            p = P(p.x + direction.x, p.y + direction.y)
+            if layout.get(p) in 'L#':
+                return layout[p]
+
+    return main()
+
+
+###
+##  DAY 12
+#
+
+IN_12 = \
+'''F10
+N3
+F7
+R90
+F11'''
+
+
+def problem_12_a(lines):
+    '''Figure out where the navigation instructions lead. What is the Manhattan distance 
+    between that location and the ship's starting position? 25'''
+
+
+
+def problem_12_b(lines):
+    ''''''
+
+
 # ###
 # ##  DAY X
 # #
