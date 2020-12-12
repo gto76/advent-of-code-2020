@@ -586,11 +586,73 @@ F11'''
 def problem_12_a(lines):
     '''Figure out where the navigation instructions lead. What is the Manhattan distance 
     between that location and the ship's starting position? 25'''
+    import collections, enum
 
+    P = collections.namedtuple('P', 'x y')
+    D = enum.Enum('D', 'n e s w')
+
+    def main():
+        p, d = P(0, 0), D.e
+        for line in lines:
+            p, d = step(p, d, line)
+        return abs(p.x) + abs(p.y)
+
+    def step(p, d, line):
+        DELTAS = {D.n: P(0, 1), D.e: P(1, 0), D.s: P(0, -1), D.w: P(-1, 0)}
+        ACTIONS = dict(
+            N=lambda p, d, arg: (P(p.x, p.y+arg), d),
+            S=lambda p, d, arg: (P(p.x, p.y-arg), d),
+            E=lambda p, d, arg: (P(p.x+arg, p.y), d),
+            W=lambda p, d, arg: (P(p.x-arg, p.y), d),
+            L=lambda p, d, arg: (p, turn(d, -arg)),
+            R=lambda p, d, arg: (p, turn(d, arg)),
+            F=lambda p, d, arg: (P(p.x + DELTAS[d].x*arg, p.y + DELTAS[d].y*arg), d)
+        )
+        action_id, arg = line[0], int(line[1:])
+        return ACTIONS[action_id](p, d, arg)
+
+    def turn(d, degrees):
+        directions = list(D)
+        index = (directions.index(d) + degrees//90) % len(directions)
+        return directions[index]
+
+    return main()
 
 
 def problem_12_b(lines):
-    ''''''
+    '''Figure out where the navigation instructions actually lead. What is the Manhattan 
+    distance between that location and the ship's starting position? 286'''
+    import collections, enum
+    P = collections.namedtuple('P', 'x y')
+
+    def main():
+        ship, waypoint = P(0, 0), P(10, 1)
+        for line in lines:
+            ship, waypoint = step(ship, waypoint, line)
+        return abs(ship.x) + abs(ship.y)
+
+    def step(ship, waypoint, line):
+        ACTIONS = dict(
+            N=lambda ship, waypoint, arg: (ship, P(waypoint.x, waypoint.y+arg)),
+            S=lambda ship, waypoint, arg: (ship, P(waypoint.x, waypoint.y-arg)),
+            E=lambda ship, waypoint, arg: (ship, P(waypoint.x+arg, waypoint.y)),
+            W=lambda ship, waypoint, arg: (ship, P(waypoint.x-arg, waypoint.y)),
+            L=lambda ship, waypoint, arg: (ship, turn(waypoint, -arg)),
+            R=lambda ship, waypoint, arg: (ship, turn(waypoint, arg)),
+            F=lambda ship, waypoint, arg: (P(ship.x + waypoint.x*arg, ship.y + 
+                                              waypoint.y*arg), waypoint)
+        )
+        action_id, arg = line[0], int(line[1:])
+        return ACTIONS[action_id](ship, waypoint, arg)
+
+    def turn(waypoint, degrees):
+        degrees += 360 if degrees < 0 else 0
+        TURN = {90:  P(x=waypoint.y,  y=-waypoint.x),
+                180: P(x=-waypoint.x, y=-waypoint.y), 
+                270: P(x=-waypoint.y, y=waypoint.x)}
+        return TURN[degrees]
+        
+    return main()
 
 
 # ###
