@@ -745,24 +745,24 @@ F11
     P = collections.namedtuple(<span class="hljs-string">'P'</span>, <span class="hljs-string">'x y'</span>)
 
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
-        ship, waypoint = P(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>), P(<span class="hljs-number">10</span>, <span class="hljs-number">1</span>)
+        p, waypoint = P(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>), P(<span class="hljs-number">10</span>, <span class="hljs-number">1</span>)
         <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines:
-            ship, waypoint = step(ship, waypoint, line)
-        <span class="hljs-keyword">return</span> abs(ship.x) + abs(ship.y)
+            p, waypoint = step(p, waypoint, line)
+        <span class="hljs-keyword">return</span> abs(p.x) + abs(p.y)
 
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">step</span><span class="hljs-params">(ship, waypoint, line)</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">step</span><span class="hljs-params">(p, waypoint, line)</span>:</span>
         ACTIONS = dict(
-            N=<span class="hljs-keyword">lambda</span> ship, waypoint, arg: (ship, P(waypoint.x, waypoint.y+arg)),
-            S=<span class="hljs-keyword">lambda</span> ship, waypoint, arg: (ship, P(waypoint.x, waypoint.y-arg)),
-            E=<span class="hljs-keyword">lambda</span> ship, waypoint, arg: (ship, P(waypoint.x+arg, waypoint.y)),
-            W=<span class="hljs-keyword">lambda</span> ship, waypoint, arg: (ship, P(waypoint.x-arg, waypoint.y)),
-            L=<span class="hljs-keyword">lambda</span> ship, waypoint, arg: (ship, turn(waypoint, -arg)),
-            R=<span class="hljs-keyword">lambda</span> ship, waypoint, arg: (ship, turn(waypoint, arg)),
-            F=<span class="hljs-keyword">lambda</span> ship, waypoint, arg: (P(ship.x + waypoint.x*arg, ship.y + 
-                                              waypoint.y*arg), waypoint)
+            N=<span class="hljs-keyword">lambda</span> p, waypoint, arg: (p, P(waypoint.x, waypoint.y+arg)),
+            S=<span class="hljs-keyword">lambda</span> p, waypoint, arg: (p, P(waypoint.x, waypoint.y-arg)),
+            E=<span class="hljs-keyword">lambda</span> p, waypoint, arg: (p, P(waypoint.x+arg, waypoint.y)),
+            W=<span class="hljs-keyword">lambda</span> p, waypoint, arg: (p, P(waypoint.x-arg, waypoint.y)),
+            L=<span class="hljs-keyword">lambda</span> p, waypoint, arg: (p, turn(waypoint, -arg)),
+            R=<span class="hljs-keyword">lambda</span> p, waypoint, arg: (p, turn(waypoint, arg)),
+            F=<span class="hljs-keyword">lambda</span> p, waypoint, arg: (P(p.x + waypoint.x*arg, p.y + waypoint.y*arg), 
+                                        waypoint)
         )
         action_id, arg = line[<span class="hljs-number">0</span>], int(line[<span class="hljs-number">1</span>:])
-        <span class="hljs-keyword">return</span> ACTIONS[action_id](ship, waypoint, arg)
+        <span class="hljs-keyword">return</span> ACTIONS[action_id](p, waypoint, arg)
 
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">turn</span><span class="hljs-params">(waypoint, degrees)</span>:</span>
         degrees += <span class="hljs-number">360</span> <span class="hljs-keyword">if</span> degrees &lt; <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>

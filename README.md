@@ -636,24 +636,24 @@ def problem_12_b(lines):
     P = collections.namedtuple('P', 'x y')
 
     def main():
-        ship, waypoint = P(0, 0), P(10, 1)
+        p, waypoint = P(0, 0), P(10, 1)
         for line in lines:
-            ship, waypoint = step(ship, waypoint, line)
-        return abs(ship.x) + abs(ship.y)
+            p, waypoint = step(p, waypoint, line)
+        return abs(p.x) + abs(p.y)
 
-    def step(ship, waypoint, line):
+    def step(p, waypoint, line):
         ACTIONS = dict(
-            N=lambda ship, waypoint, arg: (ship, P(waypoint.x, waypoint.y+arg)),
-            S=lambda ship, waypoint, arg: (ship, P(waypoint.x, waypoint.y-arg)),
-            E=lambda ship, waypoint, arg: (ship, P(waypoint.x+arg, waypoint.y)),
-            W=lambda ship, waypoint, arg: (ship, P(waypoint.x-arg, waypoint.y)),
-            L=lambda ship, waypoint, arg: (ship, turn(waypoint, -arg)),
-            R=lambda ship, waypoint, arg: (ship, turn(waypoint, arg)),
-            F=lambda ship, waypoint, arg: (P(ship.x + waypoint.x*arg, ship.y + 
-                                              waypoint.y*arg), waypoint)
+            N=lambda p, waypoint, arg: (p, P(waypoint.x, waypoint.y+arg)),
+            S=lambda p, waypoint, arg: (p, P(waypoint.x, waypoint.y-arg)),
+            E=lambda p, waypoint, arg: (p, P(waypoint.x+arg, waypoint.y)),
+            W=lambda p, waypoint, arg: (p, P(waypoint.x-arg, waypoint.y)),
+            L=lambda p, waypoint, arg: (p, turn(waypoint, -arg)),
+            R=lambda p, waypoint, arg: (p, turn(waypoint, arg)),
+            F=lambda p, waypoint, arg: (P(p.x + waypoint.x*arg, p.y + waypoint.y*arg), 
+                                        waypoint)
         )
         action_id, arg = line[0], int(line[1:])
-        return ACTIONS[action_id](ship, waypoint, arg)
+        return ACTIONS[action_id](p, waypoint, arg)
 
     def turn(waypoint, degrees):
         degrees += 360 if degrees < 0 else 0
