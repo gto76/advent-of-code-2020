@@ -622,7 +622,7 @@ def problem_12_a(lines):
 def problem_12_b(lines):
     '''Figure out where the navigation instructions actually lead. What is the Manhattan 
     distance between that location and the ship's starting position? 286'''
-    import collections, enum
+    import collections
     P = collections.namedtuple('P', 'x y')
 
     def main():

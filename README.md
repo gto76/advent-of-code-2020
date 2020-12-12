@@ -632,7 +632,7 @@ def problem_12_a(lines):
 ```python
 def problem_12_b(lines):
     '''286'''
-    import collections, enum
+    import collections
     P = collections.namedtuple('P', 'x y')
 
     def main():
