@@ -7,12 +7,14 @@
 import os, pathlib, re
 
 
-TITLES = ['Entries', 'Passwords', 'Trees', 'Passports', 'Seat IDs', 'Answers']
+TITLES = ['Entries', 'Passwords', 'Trees', 'Passports', 'Seat IDs', 'Answers', 'Bags', 
+          'Program', 'Encryption', 'Adapters', 'Seats', 'Navigation']
+
 LINKS = '<p class="banner"><sup><a href="https://adventofcode.com/2020">Go to the site' + \
         '</a>, <a href="https://raw.githubusercontent.com/gto76/advent-of-code-2020/' + \
         'master/advent_2020.py">Download Python script</a> or <a href="https://github.com/' + \
         'gto76/advent-of-code-2020">Fork me on GitHub</a>.</sup></p>'
-BANNER = '<p class="banner"><img src="web/image_888.png" alt="Monty Python"></p>'
+BANNER = '<p class="banner"><img src="web/image_888.png" alt="Advent of Code"></p>'
 
 
 def main():
@@ -31,8 +33,8 @@ def main():
 
 def process_title(text):
     day = int(re.search('\d+', text).group())
-    title = f'Day {day}' if len(TITLES) <= day else TITLES[day-1]
-    return f'## {title}'
+    title = '' if len(TITLES) < day else f': {TITLES[day-1]}'
+    return f'## Day {day}{title}'
 
 
 def process_def(text):

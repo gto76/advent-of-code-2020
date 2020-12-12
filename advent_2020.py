@@ -565,7 +565,7 @@ def problem_11_b(lines):
     def get_visible_chair(p, direction):
         while p in layout:
             p = P(p.x + direction.x, p.y + direction.y)
-            if layout.get(p) in 'L#':
+            if p in layout and layout[p] in 'L#':
                 return layout[p]
 
     return main()
@@ -651,7 +651,7 @@ def problem_12_b(lines):
                 180: P(x=-waypoint.x, y=-waypoint.y), 
                 270: P(x=-waypoint.y, y=waypoint.x)}
         return TURN[degrees]
-        
+
     return main()
 
 

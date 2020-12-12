@@ -2,9 +2,9 @@
 
 <p class="banner"><sup><a href="https://adventofcode.com/2020">Go to the site</a>, <a href="https://raw.githubusercontent.com/gto76/advent-of-code-2020/master/advent_2020.py">Download Python script</a> or <a href="https://github.com/gto76/advent-of-code-2020">Fork me on GitHub</a>.</sup></p>
 
-<p class="banner"><img src="web/image_888.png" alt="Monty Python"></p>
+<p class="banner"><img src="web/image_888.png" alt="Advent of Code"></p>
 
-## Entries
+## Day 1: Entries
 
 ```text
 1721
@@ -39,7 +39,7 @@ def problem_1_b(lines):
             return a * b * c
 ```
 
-## Passwords
+## Day 2: Passwords
 
 ```text
 1-3 a: abcde
@@ -71,7 +71,7 @@ def problem_2_b(lines):
     return sum(is_valid(line) for line in lines)
 ```
 
-## Trees
+## Day 3: Trees
 
 ```text
 ..##.......
@@ -115,7 +115,7 @@ def problem_3_b(lines):
     return functools.reduce(operator.mul, (count_trees(slope) for slope in slopes))
 ```
 
-## Passports
+## Day 4: Passports
 
 ```text
 ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
@@ -170,7 +170,7 @@ def problem_4_b(lines):
     return sum(is_passport_valid(p) for p in passports)
 ```
 
-## Seat IDs
+## Day 5: Seat IDs
 
 ```text
 BBFFBBFLLR
@@ -200,7 +200,7 @@ def problem_5_b(lines):
     return (set(all_ids) - taken_ids).pop()
 ```
 
-## Day 6
+## Day 6: Answers
 
 ```text
 abc
@@ -225,32 +225,8 @@ b
 ```python
 def problem_6_a(lines):
     '''11'''
-    groups = ' '.join(lines).split('  ')
-    return sum(len(set(group) - {' '}) for group in groups)
-
-
-# def problem_6_a(lines):
-#     '''For each group, count the number of questions to which anyone answered "yes". What is
-#     the sum of those counts? 11'''
-#     groups = ' '.join(lines).split('  ')
-#     count_groups_answers = lambda group: len(set(group.replace(' ', '')))
-#     return sum(count_groups_answers(group) for group in groups)
-
-
-# def problem_6_a(lines):
-#     '''For each group, count the number of questions to which anyone answered "yes". What is
-#     the sum of those counts? 11'''
-#     groups = ' '.join(lines).split('  ')
-#     get_groups_answers = lambda group: set(group.replace(' ', ''))
-#     return sum(len(get_groups_answers(group)) for group in groups)
-
-
-# def problem_6_a(lines):
-#     '''For each group, count the number of questions to which anyone answered "yes". What is
-#     the sum of those counts? 11'''
-#     groups = ' '.join(lines).split('  ')
-#     get_groups_answers = lambda group: set(group) - {' '}
-#     return sum(len(get_groups_answers(group)) for group in groups)
+    groups = (set(group) - {' '} for group in ' '.join(lines).split('  '))
+    return sum(len(group) for group in groups)
 ```
 
 ### For each group, count the number of questions to which everyone answered "yes". What is the sum of those counts?
@@ -260,37 +236,431 @@ def problem_6_b(lines):
     '''6'''
     import functools, operator
     groups             = ' '.join(lines).split('  ')
-    split_group        = lambda group: [set(a) for a in group.split(' ')]
+    split_group        = lambda group: (set(a) for a in group.split(' '))
     get_common_answers = lambda group: functools.reduce(operator.and_, split_group(group))
     return sum(len(get_common_answers(group)) for group in groups)
+```
 
+## Day 7: Bags
 
-# def problem_6_b(lines):
-#     '''For each group, count the number of questions to which everyone answered "yes". What is
-#     the sum of those counts? 6'''
-#     import functools, operator
-#     groups         = ' '.join(lines).split('  ')
-#     get_people     = lambda group: [set(a) for a in group.split(' ')]
-#     common_answers = [functools.reduce(operator.and_, get_people(group)) for group in groups]
-#     return sum(len(a) for a in common_answers)
+```text
+light red bags contain 1 bright white bag, 2 muted yellow bags.
+dark orange bags contain 3 bright white bags, 4 muted yellow bags.
+bright white bags contain 1 shiny gold bag.
+muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
+shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
+dark olive bags contain 3 faded blue bags, 4 dotted black bags.
+vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
+faded blue bags contain no other bags.
+dotted black bags contain no other bags.
+```
 
+### How many bag colors can eventually contain at least one shiny gold bag?
 
-# def problem_6_b(lines):
-#     '''For each group, count the number of questions to which everyone answered "yes". What is
-#     the sum of those counts? 6'''
-#     import functools, operator
-#     groups = ' '.join(lines).split('  ')
-#     split_group        = lambda group: [set(a) for a in group.split(' ')]
-#     get_common_answers = lambda group: functools.reduce(operator.and_, split_group(group))
-#     return sum(len(get_common_answers(group)) for group in groups)
+```python
+def problem_7_a(lines):
+    '''4'''
+    import re
+    def parse_line(line):
+        container, contents = line.split(' bags contain ')
+        if contents == 'no other bags.':
+            return container, set()
+        get_color = lambda token: re.search('\d+ (.*) .*$', token).group(1) 
+        return container, {get_color(a) for a in contents.split(',')}
+    bags = dict(parse_line(line) for line in lines)
+    out = {k for k, v in bags.items() if 'shiny gold' in v}
+    while True:
+        new_colors = {k for k, v in bags.items() if out & v}
+        if new_colors <= out:
+            return len(out)
+        out |= new_colors
+```
 
+### How many individual bags are required inside your single shiny gold bag?
 
-# def problem_6_b(lines):
-#     '''For each group, count the number of questions to which everyone answered "yes". What is
-#     the sum of those counts? 6'''
-#     import functools, operator
-#     groups = ' '.join(lines).split('  ')
-#     split_group = lambda group: [set(a) for a in group.split(' ')]
-#     get_common_answers = lambda group: functools.reduce(operator.and_, split_group(group))
-#     return sum(len(get_common_answers(group)) for group in groups)
+```python
+def problem_7_b(lines):
+    '''32'''
+    import re
+    def parse_line(line):
+        container, contents = line.split(' bags contain ')
+        if contents == 'no other bags.':
+            return container, set()
+        get_number_and_color = lambda token: re.search('(\d+) (.*) .*$', token).groups()
+        return container, {get_number_and_color(a) for a in contents.split(',')}
+    def get_n_bags(color):
+        contents = bags[color]
+        if not contents:
+            return 1
+        return 1 + sum(int(n) * get_n_bags(color) for n, color in contents)
+    bags = dict(parse_line(line) for line in lines)
+    return get_n_bags('shiny gold') - 1
+```
+
+## Day 8: Program
+
+```text
+nop +0
+acc +1
+jmp +4
+acc +3
+jmp -3
+acc -99
+acc +1
+jmp -4
+acc +6
+```
+
+### Run your copy of the boot code. Immediately before any instruction is executed a second time, what value is in the accumulator?
+
+```python
+def problem_8_a(lines):
+    '''5'''
+    OPERATIONS = dict(
+        acc=lambda pc, accumulator, argument: (pc+1, accumulator+int(argument)),
+        jmp=lambda pc, accumulator, argument: (pc+int(argument), accumulator),
+        nop=lambda pc, accumulator, argument: (pc+1, accumulator)
+    )
+    pc = 0
+    accumulator = 0
+    executed = set()
+    while pc not in executed:
+        executed.add(pc)
+        operation, argument = lines[pc].split()
+        pc, accumulator = OPERATIONS[operation](pc, accumulator, argument)
+    return accumulator
+```
+
+### Fix the program so that it terminates normally by changing exactly one jmp (to nop) or nop (to jmp). What is the value of the accumulator after the program terminates?
+
+```python
+def problem_8_b(lines):
+    '''8'''
+    def main():
+        for program in program_generator():
+            result = run(program)
+            if result is not None:
+                return result
+
+    def program_generator():
+        for line_number in range(len(lines)):
+            while lines[line_number].startswith('acc'):
+                line_number += 1
+            line = lines[line_number]
+            new_line = line.replace('jmp', 'nop') if 'jmp' in line else line.replace('nop', 'jmp')
+            yield lines[:line_number] + [new_line] + lines[line_number+1:]
+
+    def run(program):
+        OPERATIONS = dict(
+            acc=lambda pc, accumulator, argument: (pc+1, accumulator+int(argument)),
+            jmp=lambda pc, accumulator, argument: (pc+int(argument), accumulator),
+            nop=lambda pc, accumulator, argument: (pc+1, accumulator)
+        )
+        pc = 0
+        accumulator = 0
+        executed = set()
+        while pc not in executed:
+            executed.add(pc)
+            operation, argument = program[pc].split()
+            pc, accumulator = OPERATIONS[operation](pc, accumulator, argument)
+            if pc == len(program):
+                return accumulator
+        return None
+
+    return main()
+```
+
+## Day 9: Encryption
+
+```text
+20
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+21
+22
+23
+24
+25
+45
+65
+```
+
+### The first step of attacking the weakness in the XMAS data is to find the first number in the list (after the preamble) which is not the sum of two of the 25 numbers before it. What is the first number that does not have this property?
+
+```python
+def problem_9_a(lines):
+    '''65'''
+    import itertools
+    def is_sum(candidate, numbers):
+        for pair in itertools.combinations(numbers, 2):
+            if sum(pair) == candidate:
+                return True
+    numbers = [int(line) for line in lines]
+    for i in range(25, len(numbers)):
+        if not is_sum(numbers[i], numbers[i-25:i]):
+            return numbers[i]
+```
+
+### What is the encryption weakness in your XMAS-encrypted list of numbers?
+
+```python
+def problem_9_b(lines):
+    '''21'''
+    invalid_number = problem_9_a(lines)
+    numbers = [int(line) for line in lines]
+    for i in range(len(numbers)):
+        for j in range(i+2, len(numbers)+1):
+            sum_ = sum(numbers[i:j])
+            if sum_ == invalid_number:
+                return min(numbers[i:j]) + max(numbers[i:j])
+            elif sum_ > invalid_number:
+                break
+```
+
+## Day 10: Adapters
+
+```text
+28
+33
+18
+42
+31
+14
+46
+20
+48
+47
+24
+23
+49
+45
+19
+38
+39
+11
+1
+32
+25
+35
+8
+17
+7
+9
+4
+2
+34
+10
+3
+```
+
+### What is the number of 1-jolt differences multiplied by the number of 3-jolt differences?
+
+```python
+def problem_10_a(lines):
+    '''220'''
+    numbers = [0] + sorted(int(a) for a in lines)
+    deltas = [b-a for a, b in zip(numbers, numbers[1:])]
+    return deltas.count(1) * (deltas.count(3)+1)
+```
+
+### What is the total number of distinct ways you can arrange the adapters to connect the charging outlet to your device?
+
+```python
+def problem_10_b(lines):
+    '''19208'''
+    import functools, operator as op
+    numbers = sorted(int(a) for a in lines)
+    numbers = [0] + numbers + [numbers[-1]+3]
+    deltas = [b-a for a, b in zip(numbers, numbers[1:])]
+    d = ''.join(str(a) for a in deltas)
+    dd = [[1, 2, 4, 7, 13, 23][len(a)-1] for a in d.split('3') if a]
+    return functools.reduce(op.mul, dd)
+```
+
+## Day 11: Seats
+
+```text
+L.LL.LL.LL
+LLLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLLL
+L.LLLLLL.L
+L.LLLLL.LL
+```
+
+### Simulate your seating area by applying the seating rules repeatedly until no seats change state. How many seats end up occupied?
+
+```python
+def problem_11_a(lines):
+    '''37'''
+    import collections
+    P = collections.namedtuple('P', 'x y')
+
+    def main():
+        layout = {P(x, y): ch for y, line in enumerate(lines) for x, ch in enumerate(line)}
+        while True:
+            new_layout = step(layout)
+            if new_layout == layout:
+                return list(layout.values()).count('#')
+            layout = new_layout
+
+    def step(layout):
+        out = dict(layout)
+        for p, ch in layout.items():
+            adjecent_chars = [layout.get(a) for a in get_adjecent_positions(p)]
+            if ch == 'L' and '#' not in adjecent_chars:
+                out[p] = '#'
+            elif ch == '#' and adjecent_chars.count('#') >= 4:
+                out[p] = 'L'
+        return out
+
+    def get_adjecent_positions(p):
+        deltas = [P(-1, -1), P(0, -1), P(1, -1), P(-1, 0), P(1, 0), P(-1, 1), P(0, 1), P(1, 1)]
+        return (P(p.x + delta.x, p.y + delta.y) for delta in deltas)
+
+    return main()
+```
+
+### Given the new visibility method and the rule change for occupied seats becoming empty, once equilibrium is reached, how many seats end up occupied?
+
+```python
+def problem_11_b(lines):
+    '''26'''
+    import collections
+    P = collections.namedtuple('P', 'x y')
+
+    layout = {P(x, y): ch for y, line in enumerate(lines) for x, ch in enumerate(line)}
+
+    def main():
+        nonlocal layout
+        while True:
+            new_layout = {p: get_new_ch(p, ch) for p, ch in layout.items()}
+            if new_layout == layout:
+                return list(layout.values()).count('#')
+            layout = new_layout
+
+    def get_new_ch(p, ch):
+        directions = [P(-1, -1), P(0, -1), P(1, -1), P(-1, 0), P(1, 0), P(-1, 1), P(0, 1), 
+                      P(1, 1)]
+        visible_chairs = [get_visible_chair(p, direction) for direction in directions]
+        if ch == 'L' and '#' not in visible_chairs:
+            return '#'
+        elif ch == '#' and visible_chairs.count('#') >= 5:
+            return 'L'
+        return ch
+
+    def get_visible_chair(p, direction):
+        while p in layout:
+            p = P(p.x + direction.x, p.y + direction.y)
+            if p in layout and layout[p] in 'L#':
+                return layout[p]
+
+    return main()
+```
+
+## Day 12: Navigation
+
+```text
+F10
+N3
+F7
+R90
+F11
+```
+
+### Figure out where the navigation instructions lead. What is the Manhattan distance between that location and the ship's starting position?
+
+```python
+def problem_12_a(lines):
+    '''25'''
+    import collections, enum
+
+    P = collections.namedtuple('P', 'x y')
+    D = enum.Enum('D', 'n e s w')
+
+    def main():
+        p, d = P(0, 0), D.e
+        for line in lines:
+            p, d = step(p, d, line)
+        return abs(p.x) + abs(p.y)
+
+    def step(p, d, line):
+        DELTAS = {D.n: P(0, 1), D.e: P(1, 0), D.s: P(0, -1), D.w: P(-1, 0)}
+        ACTIONS = dict(
+            N=lambda p, d, arg: (P(p.x, p.y+arg), d),
+            S=lambda p, d, arg: (P(p.x, p.y-arg), d),
+            E=lambda p, d, arg: (P(p.x+arg, p.y), d),
+            W=lambda p, d, arg: (P(p.x-arg, p.y), d),
+            L=lambda p, d, arg: (p, turn(d, -arg)),
+            R=lambda p, d, arg: (p, turn(d, arg)),
+            F=lambda p, d, arg: (P(p.x + DELTAS[d].x*arg, p.y + DELTAS[d].y*arg), d)
+        )
+        action_id, arg = line[0], int(line[1:])
+        return ACTIONS[action_id](p, d, arg)
+
+    def turn(d, degrees):
+        directions = list(D)
+        index = (directions.index(d) + degrees//90) % len(directions)
+        return directions[index]
+
+    return main()
+```
+
+### Figure out where the navigation instructions actually lead. What is the Manhattan distance between that location and the ship's starting position?
+
+```python
+def problem_12_b(lines):
+    '''286'''
+    import collections, enum
+    P = collections.namedtuple('P', 'x y')
+
+    def main():
+        ship, waypoint = P(0, 0), P(10, 1)
+        for line in lines:
+            ship, waypoint = step(ship, waypoint, line)
+        return abs(ship.x) + abs(ship.y)
+
+    def step(ship, waypoint, line):
+        ACTIONS = dict(
+            N=lambda ship, waypoint, arg: (ship, P(waypoint.x, waypoint.y+arg)),
+            S=lambda ship, waypoint, arg: (ship, P(waypoint.x, waypoint.y-arg)),
+            E=lambda ship, waypoint, arg: (ship, P(waypoint.x+arg, waypoint.y)),
+            W=lambda ship, waypoint, arg: (ship, P(waypoint.x-arg, waypoint.y)),
+            L=lambda ship, waypoint, arg: (ship, turn(waypoint, -arg)),
+            R=lambda ship, waypoint, arg: (ship, turn(waypoint, arg)),
+            F=lambda ship, waypoint, arg: (P(ship.x + waypoint.x*arg, ship.y + 
+                                              waypoint.y*arg), waypoint)
+        )
+        action_id, arg = line[0], int(line[1:])
+        return ACTIONS[action_id](ship, waypoint, arg)
+
+    def turn(waypoint, degrees):
+        degrees += 360 if degrees < 0 else 0
+        TURN = {90:  P(x=waypoint.y,  y=-waypoint.x),
+                180: P(x=-waypoint.x, y=-waypoint.y), 
+                270: P(x=-waypoint.y, y=waypoint.x)}
+        return TURN[degrees]
+
+    return main()
 ```
