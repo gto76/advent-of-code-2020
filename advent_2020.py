@@ -341,12 +341,11 @@ def problem_8_b(lines):
                 return result
 
     def program_generator():
-        for line_number in range(len(lines)):
-            if lines[line_number].startswith('acc'):
+        for i, line in enumerate(lines):
+            if line.startswith('acc'):
                 continue
-            line = lines[line_number]
-            new_line = line.replace('jmp', 'nop') if 'jmp' in line else line.replace('nop', 'jmp')
-            yield lines[:line_number] + [new_line] + lines[line_number+1:]
+            line = line.replace('jmp', 'nop') if 'jmp' in line else line.replace('nop', 'jmp')
+            yield lines[:i] + [line] + lines[i+1:]
 
     def run(program):
         OPERATIONS = dict(
