@@ -342,8 +342,8 @@ def problem_8_b(lines):
 
     def program_generator():
         for line_number in range(len(lines)):
-            while lines[line_number].startswith('acc'):
-                line_number += 1
+            if lines[line_number].startswith('acc'):
+                continue
             line = lines[line_number]
             new_line = line.replace('jmp', 'nop') if 'jmp' in line else line.replace('nop', 'jmp')
             yield lines[:line_number] + [new_line] + lines[line_number+1:]
