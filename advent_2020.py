@@ -421,7 +421,7 @@ def problem_9_b(lines):
     invalid_number = problem_9_a(lines)
     numbers = [int(line) for line in lines]
     for i in range(len(numbers)):
-        for j in range(i+2, len(numbers)+1):
+        for j in range(i+2, len(numbers)):
             sum_ = sum(numbers[i:j])
             if sum_ == invalid_number:
                 return min(numbers[i:j]) + max(numbers[i:j])
@@ -652,6 +652,29 @@ def problem_12_b(lines):
         return TURN[degrees]
 
     return main()
+
+
+###
+##  DAY 13
+#
+
+IN_13 = \
+'''939
+7,13,x,x,59,x,31,19'''
+
+
+def problem_13_a(lines):
+    '''What is the ID of the earliest bus you can take to the airport multiplied by the number
+    of minutes you'll need to wait for that bus? 295'''
+    import itertools
+    stamp = int(lines[0])
+    ids = [int(a) for a in lines[1].split(',') if a != 'x']
+    get_departures = lambda stamp, id_: range(0, stamp+id_, id_)
+    timetable = [get_departures(stamp, id_) for id_ in ids]
+    departure = min(a for a in itertools.chain.from_iterable(timetable) if a >= stamp)
+    id_ = [a for a in ids if departure % a == 0][0]
+    return id_ * (departure - stamp)
+
 
 
 # ###

@@ -561,7 +561,7 @@ acc +6
     invalid_number = problem_9_a(lines)
     numbers = [int(line) <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines]
     <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(numbers)):
-        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(i+<span class="hljs-number">2</span>, len(numbers)+<span class="hljs-number">1</span>):
+        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(i+<span class="hljs-number">2</span>, len(numbers)):
             sum_ = sum(numbers[i:j])
             <span class="hljs-keyword">if</span> sum_ == invalid_number:
                 <span class="hljs-keyword">return</span> min(numbers[i:j]) + max(numbers[i:j])
@@ -771,6 +771,22 @@ F11
         <span class="hljs-keyword">return</span> TURN[degrees]
 
     <span class="hljs-keyword">return</span> main()
+</code></pre></div>
+
+<div><h2 id="day13"><a href="#day13" name="day13">#</a>Day 13</h2><pre><code class="text language-text">939
+7,13,x,x,59,x,31,19
+</code></pre></div>
+
+<div><h3 id="whatistheidoftheearliestbusyoucantaketotheairportmultipliedbythenumberofminutesyoullneedtowaitforthatbus">What is the ID of the earliest bus you can take to the airport multiplied by the number of minutes you'll need to wait for that bus?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_13_a</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''295'''</span>
+    <span class="hljs-keyword">import</span> itertools
+    stamp = int(lines[<span class="hljs-number">0</span>])
+    ids = [int(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> lines[<span class="hljs-number">1</span>].split(<span class="hljs-string">','</span>) <span class="hljs-keyword">if</span> a != <span class="hljs-string">'x'</span>]
+    get_departures = <span class="hljs-keyword">lambda</span> stamp, id_: range(<span class="hljs-number">0</span>, stamp+id_, id_)
+    timetable = [get_departures(stamp, id_) <span class="hljs-keyword">for</span> id_ <span class="hljs-keyword">in</span> ids]
+    departure = min(a <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> itertools.chain.from_iterable(timetable) <span class="hljs-keyword">if</span> a &gt;= stamp)
+    id_ = [a <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> ids <span class="hljs-keyword">if</span> departure % a == <span class="hljs-number">0</span>][<span class="hljs-number">0</span>]
+    <span class="hljs-keyword">return</span> id_ * (departure - stamp)
 </code></pre></div>
  
 
