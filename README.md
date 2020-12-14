@@ -685,3 +685,74 @@ def problem_13_a(lines):
     id_ = [a for a in ids if departure % a == 0][0]
     return id_ * (departure - stamp)
 ```
+
+### What is the earliest timestamp such that all of the listed bus IDs depart at offsets matching their positions in the list?
+
+```python
+def problem_13_b(lines):
+    '''1068781'''
+    buses = [(offset, int(id_)) for offset, id_ in enumerate(lines[1].split(','))
+                if id_ != 'x']
+    timestamp = 0
+    least_common_multiple = 1
+    for offset, id_ in buses:
+        while (timestamp + offset) % id_ != 0:
+            timestamp += least_common_multiple
+        least_common_multiple *= id_
+    return timestamp
+```
+
+## Day 14
+
+```text
+mask = 000000000000000000000000000000X1001X
+mem[42] = 100
+mask = 00000000000000000000000000000000X0XX
+mem[26] = 1
+```
+
+### Execute the initialization program. What is the sum of all values left in memory after it completes?
+
+```python
+def problem_14_a(lines):
+    '''51'''
+    import re
+    def get_word(val, mask):
+        bin_val = bin(int(val))[2:]
+        bin_val_padded = '0' * (len(mask)-len(bin_val)) + bin_val
+        return ''.join(a if m == 'X' else m for a, m in zip(bin_val_padded, mask))
+    mem = {}
+    for line in lines:
+        if line.startswith('mask'):
+            _, mask = line.split(' = ')
+            continue
+        addr, val = re.search('\[(\d+)\] = (\d+)', line).groups()
+        mem[addr] = get_word(val, mask)
+    return sum(int(a, 2) for a in mem.values())
+```
+
+### Execute the initialization program using an emulator for a version 2 decoder chip. What is the sum of all values left in memory after it completes?
+
+```python
+def problem_14_b(lines):
+    '''208'''
+    import itertools, re
+    def get_addresses(addr, mask):
+        bin_addr = bin(int(addr))[2:]
+        bin_addr_padded = '0' * (len(mask)-len(bin_addr)) + bin_addr
+        addr_template = ''.join(a if m == '0' else m for a, m in zip(bin_addr_padded, mask))
+        out = []
+        for floating_bits in itertools.product('01', repeat=addr_template.count('X')):
+            floating_bits = iter(floating_bits)
+            out.append(''.join(a if a != 'X' else next(floating_bits) for a in addr_template))
+        return out
+    mem = {}
+    for line in lines:
+        if line.startswith('mask'):
+            _, mask = line.split(' = ')
+            continue
+        addr, val = re.search('\[(\d+)\] = (\d+)', line).groups()
+        for address in get_addresses(addr, mask):
+            mem[address] = val
+    return sum(int(a) for a in mem.values())
+```

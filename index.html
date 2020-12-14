@@ -788,6 +788,65 @@ F11
     id_ = [a <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> ids <span class="hljs-keyword">if</span> departure % a == <span class="hljs-number">0</span>][<span class="hljs-number">0</span>]
     <span class="hljs-keyword">return</span> id_ * (departure - stamp)
 </code></pre></div>
+
+<div><h3 id="whatistheearliesttimestampsuchthatallofthelistedbusidsdepartatoffsetsmatchingtheirpositionsinthelist">What is the earliest timestamp such that all of the listed bus IDs depart at offsets matching their positions in the list?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_13_b</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''1068781'''</span>
+    buses = [(offset, int(id_)) <span class="hljs-keyword">for</span> offset, id_ <span class="hljs-keyword">in</span> enumerate(lines[<span class="hljs-number">1</span>].split(<span class="hljs-string">','</span>))
+                <span class="hljs-keyword">if</span> id_ != <span class="hljs-string">'x'</span>]
+    timestamp = <span class="hljs-number">0</span>
+    least_common_multiple = <span class="hljs-number">1</span>
+    <span class="hljs-keyword">for</span> offset, id_ <span class="hljs-keyword">in</span> buses:
+        <span class="hljs-keyword">while</span> (timestamp + offset) % id_ != <span class="hljs-number">0</span>:
+            timestamp += least_common_multiple
+        least_common_multiple *= id_
+    <span class="hljs-keyword">return</span> timestamp
+</code></pre></div>
+
+<div><h2 id="day14"><a href="#day14" name="day14">#</a>Day 14</h2><pre><code class="text language-text">mask = 000000000000000000000000000000X1001X
+mem[42] = 100
+mask = 00000000000000000000000000000000X0XX
+mem[26] = 1
+</code></pre></div>
+
+<div><h3 id="executetheinitializationprogramwhatisthesumofallvaluesleftinmemoryafteritcompletes">Execute the initialization program. What is the sum of all values left in memory after it completes?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_14_a</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''51'''</span>
+    <span class="hljs-keyword">import</span> re
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_word</span><span class="hljs-params">(val, mask)</span>:</span>
+        bin_val = bin(int(val))[<span class="hljs-number">2</span>:]
+        bin_val_padded = <span class="hljs-string">'0'</span> * (len(mask)-len(bin_val)) + bin_val
+        <span class="hljs-keyword">return</span> <span class="hljs-string">''</span>.join(a <span class="hljs-keyword">if</span> m == <span class="hljs-string">'X'</span> <span class="hljs-keyword">else</span> m <span class="hljs-keyword">for</span> a, m <span class="hljs-keyword">in</span> zip(bin_val_padded, mask))
+    mem = {}
+    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines:
+        <span class="hljs-keyword">if</span> line.startswith(<span class="hljs-string">'mask'</span>):
+            _, mask = line.split(<span class="hljs-string">' = '</span>)
+            <span class="hljs-keyword">continue</span>
+        addr, val = re.search(<span class="hljs-string">'\[(\d+)\] = (\d+)'</span>, line).groups()
+        mem[addr] = get_word(val, mask)
+    <span class="hljs-keyword">return</span> sum(int(a, <span class="hljs-number">2</span>) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> mem.values())
+</code></pre></div>
+
+<div><h3 id="executetheinitializationprogramusinganemulatorforaversion2decoderchipwhatisthesumofallvaluesleftinmemoryafteritcompletes">Execute the initialization program using an emulator for a version 2 decoder chip. What is the sum of all values left in memory after it completes?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_14_b</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''208'''</span>
+    <span class="hljs-keyword">import</span> itertools, re
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_addresses</span><span class="hljs-params">(addr, mask)</span>:</span>
+        bin_addr = bin(int(addr))[<span class="hljs-number">2</span>:]
+        bin_addr_padded = <span class="hljs-string">'0'</span> * (len(mask)-len(bin_addr)) + bin_addr
+        addr_template = <span class="hljs-string">''</span>.join(a <span class="hljs-keyword">if</span> m == <span class="hljs-string">'0'</span> <span class="hljs-keyword">else</span> m <span class="hljs-keyword">for</span> a, m <span class="hljs-keyword">in</span> zip(bin_addr_padded, mask))
+        out = []
+        <span class="hljs-keyword">for</span> floating_bits <span class="hljs-keyword">in</span> itertools.product(<span class="hljs-string">'01'</span>, repeat=addr_template.count(<span class="hljs-string">'X'</span>)):
+            floating_bits = iter(floating_bits)
+            out.append(<span class="hljs-string">''</span>.join(a <span class="hljs-keyword">if</span> a != <span class="hljs-string">'X'</span> <span class="hljs-keyword">else</span> next(floating_bits) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> addr_template))
+        <span class="hljs-keyword">return</span> out
+    mem = {}
+    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines:
+        <span class="hljs-keyword">if</span> line.startswith(<span class="hljs-string">'mask'</span>):
+            _, mask = line.split(<span class="hljs-string">' = '</span>)
+            <span class="hljs-keyword">continue</span>
+        addr, val = re.search(<span class="hljs-string">'\[(\d+)\] = (\d+)'</span>, line).groups()
+        <span class="hljs-keyword">for</span> address <span class="hljs-keyword">in</span> get_addresses(addr, mask):
+            mem[address] = val
+    <span class="hljs-keyword">return</span> sum(int(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> mem.values())
+</code></pre></div>
  
 
   <footer>
