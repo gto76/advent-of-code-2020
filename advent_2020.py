@@ -681,13 +681,13 @@ def problem_13_b(lines):
     matching their positions in the list? 1068781'''
     buses = [(offset, int(id_)) for offset, id_ in enumerate(lines[1].split(','))
                 if id_ != 'x']
-    timestamp = 0
+    stamp = 0
     least_common_multiple = 1
     for offset, id_ in buses:
-        while (timestamp + offset) % id_ != 0:
-            timestamp += least_common_multiple
+        while (stamp + offset) % id_ != 0:
+            stamp += least_common_multiple
         least_common_multiple *= id_
-    return timestamp
+    return stamp
 
 
 ###
