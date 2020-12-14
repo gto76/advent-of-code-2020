@@ -664,7 +664,7 @@ def problem_12_b(lines):
     return main()
 ```
 
-## Day 13
+## Day 13: Buses
 
 ```text
 939
@@ -702,7 +702,7 @@ def problem_13_b(lines):
     return timestamp
 ```
 
-## Day 14
+## Day 14: Bitmasks
 
 ```text
 mask = 000000000000000000000000000000X1001X
