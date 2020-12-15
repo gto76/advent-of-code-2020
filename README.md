@@ -761,7 +761,7 @@ def problem_14_b(lines):
     return main()
 ```
 
-## Day 15
+## Day 15: Numbers Game
 
 ```text
 0,3,6
