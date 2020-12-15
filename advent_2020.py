@@ -746,7 +746,6 @@ def problem_14_b(lines):
     return main()
 
 
-
 ###
 ##  DAY 15
 #
