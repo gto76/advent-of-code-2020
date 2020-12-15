@@ -793,13 +793,13 @@ F11
     <span class="hljs-string">'''1068781'''</span>
     buses = [(offset, int(id_)) <span class="hljs-keyword">for</span> offset, id_ <span class="hljs-keyword">in</span> enumerate(lines[<span class="hljs-number">1</span>].split(<span class="hljs-string">','</span>))
                 <span class="hljs-keyword">if</span> id_ != <span class="hljs-string">'x'</span>]
-    timestamp = <span class="hljs-number">0</span>
+    stamp = <span class="hljs-number">0</span>
     least_common_multiple = <span class="hljs-number">1</span>
     <span class="hljs-keyword">for</span> offset, id_ <span class="hljs-keyword">in</span> buses:
-        <span class="hljs-keyword">while</span> (timestamp + offset) % id_ != <span class="hljs-number">0</span>:
-            timestamp += least_common_multiple
+        <span class="hljs-keyword">while</span> (stamp + offset) % id_ != <span class="hljs-number">0</span>:
+            stamp += least_common_multiple
         least_common_multiple *= id_
-    <span class="hljs-keyword">return</span> timestamp
+    <span class="hljs-keyword">return</span> stamp
 </code></pre></div>
 
 <div><h2 id="day14bitmasks"><a href="#day14bitmasks" name="day14bitmasks">#</a>Day 14: Bitmasks</h2><pre><code class="text language-text">mask = 000000000000000000000000000000X1001X

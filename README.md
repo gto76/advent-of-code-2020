@@ -737,22 +737,58 @@ def problem_14_a(lines):
 def problem_14_b(lines):
     '''208'''
     import itertools, re
-    def get_addresses(addr, mask):
+
+    def main():
+        mem = {}
+        for line in lines:
+            if line.startswith('mask'):
+                _, mask = line.split(' = ')
+                continue
+            addr, val = re.search('\[(\d+)\] = (\d+)', line).groups()
+            for address in address_generator(addr, mask):
+                mem[address] = val
+        return sum(int(a) for a in mem.values())
+
+    def address_generator(addr, mask):
         bin_addr = bin(int(addr))[2:]
         bin_addr_padded = '0' * (len(mask)-len(bin_addr)) + bin_addr
         addr_template = ''.join(a if m == '0' else m for a, m in zip(bin_addr_padded, mask))
-        out = []
         for floating_bits in itertools.product('01', repeat=addr_template.count('X')):
             floating_bits = iter(floating_bits)
-            out.append(''.join(a if a != 'X' else next(floating_bits) for a in addr_template))
-        return out
-    mem = {}
-    for line in lines:
-        if line.startswith('mask'):
-            _, mask = line.split(' = ')
-            continue
-        addr, val = re.search('\[(\d+)\] = (\d+)', line).groups()
-        for address in get_addresses(addr, mask):
-            mem[address] = val
-    return sum(int(a) for a in mem.values())
+            yield ''.join(next(floating_bits) if ch == 'X' else ch for ch in addr_template)
+
+    return main()
+```
+
+## Day 15
+
+```text
+0,3,6
+```
+
+### Given your starting numbers, what will be the 2020th number spoken?
+
+```python
+def problem_15_a(lines):
+    '''436'''
+    *record, last_spoken = [int(a) for a in lines[0].split(',')]
+    for _ in range(len(record)+1, 2020):
+        delta = list(reversed(record)).index(last_spoken) + 1 if last_spoken in record else 0
+        record.append(last_spoken)
+        last_spoken = delta
+    return last_spoken
+```
+
+### Given your starting numbers, what will be the 30000000th number spoken?
+
+```python
+def problem_15_b(lines):
+    '''175594'''
+    *record, last_spoken = [int(a) for a in lines[0].split(',')]
+    record = {a: record.index(a)+1 for a in record}
+    for i in range(len(record)+1, 30000000):
+        delta = i - record[last_spoken] if last_spoken in record else 0
+        record[last_spoken] = i
+        last_spoken = delta
+    return last_spoken
 ```
