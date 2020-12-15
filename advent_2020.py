@@ -334,6 +334,7 @@ def problem_8_a(lines):
 def problem_8_b(lines):
     '''Fix the program so that it terminates normally by changing exactly one jmp (to nop) or 
     nop (to jmp). What is the value of the accumulator after the program terminates? 8'''
+
     def main():
         for program in program_generator():
             result = run(program)

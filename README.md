@@ -336,6 +336,7 @@ def problem_8_a(lines):
 ```python
 def problem_8_b(lines):
     '''8'''
+
     def main():
         for program in program_generator():
             result = run(program)
