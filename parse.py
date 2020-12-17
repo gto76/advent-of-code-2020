@@ -9,7 +9,7 @@ import os, pathlib, re
 
 TITLES = ['Entries', 'Passwords', 'Trees', 'Passports', 'Seat IDs', 'Answers', 'Bags', 
           'Program', 'Encryption', 'Adapters', 'Seats', 'Navigation', 'Buses', 'Bitmasks',
-          'Numbers Game']
+          'Numbers Game', 'Tickets']
 
 LINKS = '<p class="banner"><sup><a href="https://adventofcode.com/2020">Go to the site' + \
         '</a>, <a href="https://raw.githubusercontent.com/gto76/advent-of-code-2020/' + \

@@ -19,11 +19,12 @@ def main():
             result = function()
         expected_result = function.__doc__.split('?')[-1].strip()
         if str(result) != expected_result:
-            print(f'Function "{function.__name__}" returned {result} instead of',
+            print(f'\nFunction "{function.__name__}" returned {result} instead of',
                   f'{expected_result}.')
             break
+        print('█', end='', flush=True)
     else:
-        print('All tests passed.')
+        print('\nAll tests passed.')
 
 
 ###
@@ -160,22 +161,25 @@ def problem_4_a(lines):
 def problem_4_b(lines):
     '''In your batch file, how many passports are valid? 2'''
     import re
-    RULES = dict(
-        byr=lambda v: 1920 <= int(v) <= 2002,
-        iyr=lambda v: 2010 <= int(v) <=  2020,
-        eyr=lambda v: 2020 <= int(v) <=  2030,
-        hgt=lambda v: 150 <= int(v[:-2]) <= 193 if 'cm' in v else 59 <= int(v[:-2]) <= 76,
-        hcl=lambda v: re.match('#[0-9a-f]{6}$', v) != None,
-        ecl=lambda v: v in 'amb blu brn gry grn hzl oth'.split(),
-        pid=lambda v: re.match('\d{9}$', v) != None
-    )
+
+    def is_passport_valid(passport):
+        return sum(is_field_valid(*item.split(':')) for item in passport.split()) == 7
+        
     def is_field_valid(key, value):
+        RULES = dict(
+            byr=lambda v: 1920 <= int(v) <= 2002,
+            iyr=lambda v: 2010 <= int(v) <=  2020,
+            eyr=lambda v: 2020 <= int(v) <=  2030,
+            hgt=lambda v: 150 <= int(v[:-2]) <= 193 if 'cm' in v else 59 <= int(v[:-2]) <= 76,
+            hcl=lambda v: re.match('#[0-9a-f]{6}$', v) != None,
+            ecl=lambda v: v in 'amb blu brn gry grn hzl oth'.split(),
+            pid=lambda v: re.match('\d{9}$', v) != None
+        )
         try:
             return RULES[key](value)
         except Exception:
             return False
-    def is_passport_valid(passport):
-        return sum(is_field_valid(*item.split(':')) for item in passport.split()) == 7
+
     passports = ' '.join(lines).split('  ')
     return sum(is_passport_valid(p) for p in passports)
 
@@ -264,12 +268,14 @@ dotted black bags contain no other bags.'''
 def problem_7_a(lines):
     '''How many bag colors can eventually contain at least one shiny gold bag? 4'''
     import re
+
     def parse_line(line):
         container, contents = line.split(' bags contain ')
         if contents == 'no other bags.':
             return container, set()
         get_color = lambda token: re.search('\d+ (.*) .*$', token).group(1) 
         return container, {get_color(a) for a in contents.split(',')}
+
     bags = dict(parse_line(line) for line in lines)
     out = {k for k, v in bags.items() if 'shiny gold' in v}
     while True:
@@ -282,17 +288,20 @@ def problem_7_a(lines):
 def problem_7_b(lines):
     '''How many individual bags are required inside your single shiny gold bag? 32'''
     import re
+
     def parse_line(line):
         container, contents = line.split(' bags contain ')
         if contents == 'no other bags.':
             return container, set()
         get_number_and_color = lambda token: re.search('(\d+) (.*) .*$', token).groups()
         return container, {get_number_and_color(a) for a in contents.split(',')}
+
     def get_n_bags(color):
         contents = bags[color]
         if not contents:
             return 1
         return 1 + sum(int(n) * get_n_bags(color) for n, color in contents)
+
     bags = dict(parse_line(line) for line in lines)
     return get_n_bags('shiny gold') - 1
 
@@ -509,6 +518,7 @@ def problem_11_a(lines):
     '''Simulate your seating area by applying the seating rules repeatedly until no seats
     change state. How many seats end up occupied? 37'''
     import collections
+
     P = collections.namedtuple('P', 'x y')
 
     def main():
@@ -623,6 +633,7 @@ def problem_12_b(lines):
     '''Figure out where the navigation instructions actually lead. What is the Manhattan 
     distance between that location and the ship's starting position? 286'''
     import collections
+    
     P = collections.namedtuple('P', 'x y')
 
     def main():
@@ -706,18 +717,23 @@ def problem_14_a(lines):
     '''Execute the initialization program. What is the sum of all values left in memory after 
     it completes? 51'''
     import re
+
+    def main():
+        mem = {}
+        for line in lines:
+            if line.startswith('mask'):
+                _, mask = line.split(' = ')
+                continue
+            addr, val = re.search('\[(\d+)\] = (\d+)', line).groups()
+            mem[addr] = get_word(val, mask)
+        return sum(int(a, 2) for a in mem.values())
+
     def get_word(val, mask):
         bin_val = bin(int(val))[2:]
         bin_val_padded = '0' * (len(mask)-len(bin_val)) + bin_val
         return ''.join(a if m == 'X' else m for a, m in zip(bin_val_padded, mask))
-    mem = {}
-    for line in lines:
-        if line.startswith('mask'):
-            _, mask = line.split(' = ')
-            continue
-        addr, val = re.search('\[(\d+)\] = (\d+)', line).groups()
-        mem[addr] = get_word(val, mask)
-    return sum(int(a, 2) for a in mem.values())
+
+    return main()
 
 
 def problem_14_b(lines):
@@ -775,6 +791,125 @@ def problem_15_b(lines):
         last_spoken = delta
     return last_spoken
 
+
+###
+##  DAY 16
+#
+
+IN_16 = \
+'''class: 1-3 or 5-7
+row: 6-11 or 33-44
+departure: 13-40 or 45-50
+
+your ticket:
+7,1,14
+
+nearby tickets:
+7,3,47
+40,4,50
+55,2,20
+38,6,12'''
+
+
+def problem_16_a(lines):
+    '''Consider the validity of the nearby tickets you scanned. What is your ticket scanning
+    error rate? 71'''
+
+    def get_valid_ranges():
+        out = []
+        for field in fields:
+            for range_ in field.split(': ')[1].split(' or '):
+                start, stop = [int(a) for a in range_.split('-')]
+                out.append(range(start, stop+1))
+        return out
+
+    fields, _, nerby_tickets = [a.split('\r') for a in '\r'.join(lines).split('\r\r')]
+    valid_ranges = get_valid_ranges()
+    is_valid = lambda a: any(a in b for b in valid_ranges)
+    values = [int(a) for a in ','.join(nerby_tickets[1:]).split(',')] 
+    return sum(a for a in values if not is_valid(a))
+
+
+# def problem_16_b(lines):
+#     '''Once you work out which field is which, look for the six fields on your ticket that
+#     start with the word departure. What do you get if you multiply those six values
+#     together?'''
+
+#     def get_valid_ranges(field):
+#         for range_ in field.split(': ')[1].split(' or '):
+#             start, stop = [int(a) for a in range_.split('-')]
+#             yield range(start, stop+1)
+
+#     def is_ticket_valid(ticket):
+#         values = [int(value) for value in ticket.split(',')]
+#         return all(any(value in range_ for range_ in valid_ranges) for value in values)
+
+#     fields, _, nerby_tickets = [a.split('\r') for a in '\r'.join(lines).split('\r\r')]
+#     valid_ranges = [range_ for field in fields for range_ in get_valid_ranges(field)]
+#     valid_tickets = [ticket for ticket in nerby_tickets[1:] if is_ticket_valid(ticket)]
+
+
+def problem_16_b(lines):
+    '''Once you work out which field is which, look for the six fields on your ticket that
+    start with the word departure. What do you get if you multiply those six values
+    together? 14'''
+    import functools, operator as op
+
+    valid_ranges, fields, valid_tickets, field_dict = None, None, None, None
+
+    def main():
+        nonlocal valid_ranges, fields, valid_tickets, field_dict
+        fields, your_ticket, nerby_tickets = [a.split('\r') for a in 
+                                                  '\r'.join(lines).split('\r\r')]
+        valid_ranges = [range_ for field in fields for range_ in get_valid_ranges(field)]
+        valid_tickets = [ticket for ticket in nerby_tickets[1:] + your_ticket[1:] if 
+                             is_ticket_valid(ticket)]
+        valid_tickets = [tuple(int(a) for a in ticket.split(',')) for ticket in valid_tickets]
+        field_dict = get_fields_dict()
+        out = {i: set(field_dict.keys()) for i in range(len(valid_tickets[0]))}
+        purge_solutions(out)
+        while any(len(fields) != 1 for fields in out.values()):
+            remove_solved_fields(out)
+        your_ticket_vals = [int(a) for a in your_ticket[1].split(',')]
+        indices = [i for i, fields in out.items() if 'departure' in list(fields)[0]]
+        return functools.reduce(op.mul, (your_ticket_vals[i] for i in indices))
+
+    def get_valid_ranges(field):
+        for range_ in field.split(': ')[1].split(' or '):
+            start, stop = [int(a) for a in range_.split('-')]
+            yield range(start, stop+1)
+
+    def is_ticket_valid(ticket):
+        values = [int(value) for value in ticket.split(',')]
+        return all(any(value in range_ for range_ in valid_ranges) for value in values)
+
+    def get_fields_dict():
+        out = {}
+        for field in fields:
+            name, ranges = field.split(': ')
+            out[name] = []
+            for range_ in ranges.split(' or '):
+                start, stop = [int(a) for a in range_.split('-')]
+                out[name].append(range(start, stop+1))
+        return out
+
+    def purge_solutions(out):
+        get_column = lambda i: [a[i] for a in valid_tickets]
+        for i in range(len(valid_tickets[0])):
+            for val in get_column(i):
+                for field_name, ranges in field_dict.items():
+                    if all(val not in range_ for
+                     range_ in ranges):
+                        out[i] -= {field_name}
+
+    def remove_solved_fields(tmp):
+        solved_fields = [next(iter(fields)) for i, fields in tmp.items() if len(fields) == 1]
+        for solved_field in solved_fields:
+            for i, possible_fields in tmp.items():
+                if len(possible_fields) != 1:
+                    possible_fields -= {solved_field}
+
+    return main()
 
 # ###
 # ##  DAY X
