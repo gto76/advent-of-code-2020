@@ -9,7 +9,7 @@ import os, pathlib, re
 
 TITLES = ['Entries', 'Passwords', 'Trees', 'Passports', 'Seat IDs', 'Answers', 'Bags', 
           'Program', 'Encryption', 'Adapters', 'Seats', 'Navigation', 'Buses', 'Bitmasks',
-          'Numbers Game', 'Tickets']
+          'Numbers Game', 'Tickets', 'Cubes']
 
 LINKS = '<p class="banner"><sup><a href="https://adventofcode.com/2020">Go to the site' + \
         '</a>, <a href="https://raw.githubusercontent.com/gto76/advent-of-code-2020/' + \
@@ -22,9 +22,9 @@ def main():
     lines_1 = read_file(pathlib.Path(__file__).resolve().parent / 'advent_2020.py')
     lines_2 = lines_1[lines_1.index('###\n'):lines_1.index('# ###\n')] 
     lines_3 = [a for a in lines_2 if not a.startswith(('###\n', '#\n', 'IN_'))]
-    lines_4 = [f'\r{a}' if a.startswith(('##', "'''", 'def')) else a for a in lines_3]
+    lines_4 = [f'\r{a}' if a.startswith(('##  ', "'''", 'def')) else a for a in lines_3]
     parts_1 = [a.strip() for a in ''.join(lines_4).split('\r') if a]
-    parts_2 = [process_title(a) if a.startswith('##') else
+    parts_2 = [process_title(a) if a.startswith('##  ') else
                    (f'```text\n{a[3:-3]}\n```' if a.startswith("'''") else process_def(a))
                        for a in parts_1]
     text = '\n\n'.join(['# Advent of Code 2020', LINKS, BANNER] + parts_2)

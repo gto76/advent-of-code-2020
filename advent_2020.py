@@ -9,7 +9,9 @@
 
 def main():
     import inspect
-    for function in [a for a in globals().values() if callable(a) and a.__name__ != 'main']:
+    functions = [a for a in globals().values() if callable(a) and a.__name__ != 'main']
+    print(' ' * len(functions) + ' |\r|', end='', flush=True)
+    for function in functions:
         no_of_params = len(inspect.signature(function).parameters)
         if no_of_params > 0:
             input_name = 'IN_' + function.__name__.split('_')[1]
@@ -164,7 +166,7 @@ def problem_4_b(lines):
 
     def is_passport_valid(passport):
         return sum(is_field_valid(*item.split(':')) for item in passport.split()) == 7
-        
+
     def is_field_valid(key, value):
         RULES = dict(
             byr=lambda v: 1920 <= int(v) <= 2002,
@@ -416,10 +418,12 @@ def problem_9_a(lines):
     the list (after the preamble) which is not the sum of two of the 25 numbers before it. What
     is the first number that does not have this property? 65'''
     import itertools
+
     def is_sum(candidate, numbers):
         for pair in itertools.combinations(numbers, 2):
             if sum(pair) == candidate:
                 return True
+
     numbers = [int(line) for line in lines]
     for i in range(25, len(numbers)):
         if not is_sum(numbers[i], numbers[i-25:i]):
@@ -540,8 +544,8 @@ def problem_11_a(lines):
         return out
 
     def get_adjecent_positions(p):
-        deltas = [P(-1, -1), P(0, -1), P(1, -1), P(-1, 0), P(1, 0), P(-1, 1), P(0, 1), P(1, 1)]
-        return (P(p.x + delta.x, p.y + delta.y) for delta in deltas)
+        DELTAS = [P(-1, -1), P(0, -1), P(1, -1), P(-1, 0), P(1, 0), P(-1, 1), P(0, 1), P(1, 1)]
+        return (P(p.x + dx, p.y + dy) for dx, dy in DELTAS)
 
     return main()
 
@@ -563,9 +567,9 @@ def problem_11_b(lines):
             layout = new_layout
 
     def get_new_ch(p, ch):
-        directions = [P(-1, -1), P(0, -1), P(1, -1), P(-1, 0), P(1, 0), P(-1, 1), P(0, 1), 
+        DIRECTIONS = [P(-1, -1), P(0, -1), P(1, -1), P(-1, 0), P(1, 0), P(-1, 1), P(0, 1),
                       P(1, 1)]
-        visible_chairs = [get_visible_chair(p, direction) for direction in directions]
+        visible_chairs = [get_visible_chair(p, direction) for direction in DIRECTIONS]
         if ch == 'L' and '#' not in visible_chairs:
             return '#'
         elif ch == '#' and visible_chairs.count('#') >= 5:
@@ -633,7 +637,7 @@ def problem_12_b(lines):
     '''Figure out where the navigation instructions actually lead. What is the Manhattan 
     distance between that location and the ship's starting position? 286'''
     import collections
-    
+
     P = collections.namedtuple('P', 'x y')
 
     def main():
@@ -814,102 +818,140 @@ nearby tickets:
 def problem_16_a(lines):
     '''Consider the validity of the nearby tickets you scanned. What is your ticket scanning
     error rate? 71'''
-
-    def get_valid_ranges():
-        out = []
-        for field in fields:
-            for range_ in field.split(': ')[1].split(' or '):
-                start, stop = [int(a) for a in range_.split('-')]
-                out.append(range(start, stop+1))
-        return out
+    def get_valid_ranges(field):
+        for range_ in field.split(': ')[1].split(' or '):
+            start, stop = [int(a) for a in range_.split('-')]
+            yield range(start, stop+1)
 
     fields, _, nerby_tickets = [a.split('\r') for a in '\r'.join(lines).split('\r\r')]
-    valid_ranges = get_valid_ranges()
-    is_valid = lambda a: any(a in b for b in valid_ranges)
-    values = [int(a) for a in ','.join(nerby_tickets[1:]).split(',')] 
+    valid_ranges = [range_ for f in fields for range_ in get_valid_ranges(f)]
+    is_valid = lambda value: any(value in a for a in valid_ranges)
+    values = [int(a) for a in ','.join(nerby_tickets[1:]).split(',')]
     return sum(a for a in values if not is_valid(a))
-
-
-# def problem_16_b(lines):
-#     '''Once you work out which field is which, look for the six fields on your ticket that
-#     start with the word departure. What do you get if you multiply those six values
-#     together?'''
-
-#     def get_valid_ranges(field):
-#         for range_ in field.split(': ')[1].split(' or '):
-#             start, stop = [int(a) for a in range_.split('-')]
-#             yield range(start, stop+1)
-
-#     def is_ticket_valid(ticket):
-#         values = [int(value) for value in ticket.split(',')]
-#         return all(any(value in range_ for range_ in valid_ranges) for value in values)
-
-#     fields, _, nerby_tickets = [a.split('\r') for a in '\r'.join(lines).split('\r\r')]
-#     valid_ranges = [range_ for field in fields for range_ in get_valid_ranges(field)]
-#     valid_tickets = [ticket for ticket in nerby_tickets[1:] if is_ticket_valid(ticket)]
 
 
 def problem_16_b(lines):
     '''Once you work out which field is which, look for the six fields on your ticket that
     start with the word departure. What do you get if you multiply those six values
     together? 14'''
-    import functools, operator as op
-
-    valid_ranges, fields, valid_tickets, field_dict = None, None, None, None
+    import functools, operator as op, re
 
     def main():
-        nonlocal valid_ranges, fields, valid_tickets, field_dict
-        fields, your_ticket, nerby_tickets = [a.split('\r') for a in 
+        fields, your_ticket, nerby_tickets = [a.split('\r') for a in
                                                   '\r'.join(lines).split('\r\r')]
-        valid_ranges = [range_ for field in fields for range_ in get_valid_ranges(field)]
-        valid_tickets = [ticket for ticket in nerby_tickets[1:] + your_ticket[1:] if 
-                             is_ticket_valid(ticket)]
-        valid_tickets = [tuple(int(a) for a in ticket.split(',')) for ticket in valid_tickets]
-        field_dict = get_fields_dict()
-        out = {i: set(field_dict.keys()) for i in range(len(valid_tickets[0]))}
-        purge_solutions(out)
+        valid_tickets = get_valid_tickets(fields, nerby_tickets[1:] + your_ticket[1:])
+        field_ranges = get_fields_dict(fields)
+        out = {i: set(field_ranges.keys()) for i in range(len(valid_tickets[0]))}
+        purge_solutions(out, valid_tickets, field_ranges)
         while any(len(fields) != 1 for fields in out.values()):
             remove_solved_fields(out)
         your_ticket_vals = [int(a) for a in your_ticket[1].split(',')]
-        indices = [i for i, fields in out.items() if 'departure' in list(fields)[0]]
+        indices = [i for i, fields in out.items() if 'departure' in next(iter(fields))]
         return functools.reduce(op.mul, (your_ticket_vals[i] for i in indices))
 
-    def get_valid_ranges(field):
-        for range_ in field.split(': ')[1].split(' or '):
-            start, stop = [int(a) for a in range_.split('-')]
-            yield range(start, stop+1)
-
-    def is_ticket_valid(ticket):
-        values = [int(value) for value in ticket.split(',')]
-        return all(any(value in range_ for range_ in valid_ranges) for value in values)
-
-    def get_fields_dict():
-        out = {}
-        for field in fields:
-            name, ranges = field.split(': ')
-            out[name] = []
-            for range_ in ranges.split(' or '):
+    def get_valid_tickets(fields, tickets):
+        def get_valid_ranges(field):
+            for range_ in field.split(': ')[1].split(' or '):
                 start, stop = [int(a) for a in range_.split('-')]
-                out[name].append(range(start, stop+1))
-        return out
+                yield range(start, stop+1)
+        def is_ticket_valid(ticket):
+            values = [int(value) for value in ticket.split(',')]
+            return all(any(value in range_ for range_ in valid_ranges) for value in values)
+        valid_ranges = [range_ for field in fields for range_ in get_valid_ranges(field)]
+        return [[int(a) for a in t.split(',')] for t in tickets if is_ticket_valid(t)]
 
-    def purge_solutions(out):
+    def get_fields_dict(fields):
+        def get_item(field):
+            name, start_1, stop_1, start_2, stop_2 = \
+                re.match('^(.*): (\d+)-(\d+) or (\d+)-(\d+)', field).groups()
+            return name, [range(int(start_1), int(stop_1)+1),
+                          range(int(start_2), int(stop_2)+1)]
+        return dict(get_item(field) for field in fields)
+
+    def purge_solutions(out, valid_tickets, field_ranges):
         get_column = lambda i: [a[i] for a in valid_tickets]
         for i in range(len(valid_tickets[0])):
             for val in get_column(i):
-                for field_name, ranges in field_dict.items():
-                    if all(val not in range_ for
-                     range_ in ranges):
+                for field_name, ranges in field_ranges.items():
+                    if all(val not in range_ for range_ in ranges):
                         out[i] -= {field_name}
 
-    def remove_solved_fields(tmp):
-        solved_fields = [next(iter(fields)) for i, fields in tmp.items() if len(fields) == 1]
-        for solved_field in solved_fields:
-            for i, possible_fields in tmp.items():
-                if len(possible_fields) != 1:
-                    possible_fields -= {solved_field}
+    def remove_solved_fields(out):
+        solved_fields = {next(iter(fields)) for fields in out.values() if len(fields) == 1}
+        for possible_fields in out.values():
+            if len(possible_fields) != 1:
+                possible_fields -= solved_fields
 
     return main()
+
+
+###
+##  DAY 17
+#
+
+IN_17 = \
+'''.#.
+..#
+###'''
+
+
+def problem_17_a(lines):
+    '''Starting with your given initial configuration, simulate six cycles. How many cubes are
+    left in the active state after the sixth cycle? 112'''
+    import collections, itertools
+    P = collections.namedtuple('P', 'x y z')
+
+    def main():
+        cubes = {P(x, y, 0) for y, line in enumerate(lines)
+                                for x, ch in enumerate(line) if ch == '#'}
+        for _ in range(6):
+            cubes = step(cubes)
+        return len(cubes)
+
+    def step(cubes):
+        def should_be_active(p):
+            n_active_neighbours = len(get_neighbours(p) & cubes)
+            return (p in cubes and 2 <= n_active_neighbours <= 3) or \
+                   (p not in cubes and n_active_neighbours == 3)
+
+        candidates = {p for cube in cubes for p in get_neighbours(cube)}
+        return {p for p in candidates if should_be_active(p)}
+
+    def get_neighbours(p):
+        DELTAS = set(itertools.product([-1, 0, 1], repeat=3)) - {(0, 0, 0)}
+        return {P(p.x + dx, p.y + dy, p.z + dz) for dx, dy, dz in DELTAS}
+
+    return main()
+
+
+def problem_17_b(lines):
+    '''Starting with your given initial configuration, simulate six cycles in a 4-dimensional
+    space. How many cubes are left in the active state after the sixth cycle? 848'''
+    import collections, itertools
+    P = collections.namedtuple('P', 'x y z w')
+
+    def main():
+        cubes = {P(x, y, 0, 0) for y, line in enumerate(lines)
+                                   for x, ch in enumerate(line) if ch == '#'}
+        for _ in range(6):
+            cubes = step(cubes)
+        return len(cubes)
+
+    def step(cubes):
+        def should_be_active(p):
+            n_active_neighbours = len(get_neighbours(p) & cubes)
+            return (p in cubes and 2 <= n_active_neighbours <= 3) or \
+                   (p not in cubes and n_active_neighbours == 3)
+
+        candidates = {p for cube in cubes for p in get_neighbours(cube)}
+        return {p for p in candidates if should_be_active(p)}
+
+    def get_neighbours(p):
+        DELTAS = set(itertools.product([-1, 0, 1], repeat=4)) - {(0, 0, 0, 0)}
+        return {P(p.x + dx, p.y + dy, p.z + dz, p.w + dw) for dx, dy, dz, dw in DELTAS}
+
+    return main()
+
 
 # ###
 # ##  DAY X
