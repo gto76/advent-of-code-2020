@@ -420,9 +420,7 @@ def problem_9_a(lines):
     import itertools
 
     def is_sum(candidate, numbers):
-        for pair in itertools.combinations(numbers, 2):
-            if sum(pair) == candidate:
-                return True
+        return any(a + b == candidate for a, b in itertools.combinations(numbers, 2))
 
     numbers = [int(line) for line in lines]
     for i in range(25, len(numbers)):
@@ -722,39 +720,25 @@ def problem_14_a(lines):
     it completes? 51'''
     import re
 
-    def main():
-        mem = {}
-        for line in lines:
-            if line.startswith('mask'):
-                _, mask = line.split(' = ')
-                continue
-            addr, val = re.search('\[(\d+)\] = (\d+)', line).groups()
-            mem[addr] = get_word(val, mask)
-        return sum(int(a, 2) for a in mem.values())
-
     def get_word(val, mask):
         bin_val = bin(int(val))[2:]
         bin_val_padded = '0' * (len(mask)-len(bin_val)) + bin_val
         return ''.join(a if m == 'X' else m for a, m in zip(bin_val_padded, mask))
 
-    return main()
+    mem = {}
+    for line in lines:
+        if line.startswith('mask'):
+            _, mask = line.split(' = ')
+            continue
+        addr, val = re.search('\[(\d+)\] = (\d+)', line).groups()
+        mem[addr] = get_word(val, mask)
+    return sum(int(a, 2) for a in mem.values())
 
 
 def problem_14_b(lines):
     '''Execute the initialization program using an emulator for a version 2 decoder chip. What
     is the sum of all values left in memory after it completes? 208'''
     import itertools, re
-
-    def main():
-        mem = {}
-        for line in lines:
-            if line.startswith('mask'):
-                _, mask = line.split(' = ')
-                continue
-            addr, val = re.search('\[(\d+)\] = (\d+)', line).groups()
-            for address in address_generator(addr, mask):
-                mem[address] = val
-        return sum(int(a) for a in mem.values())
 
     def address_generator(addr, mask):
         bin_addr = bin(int(addr))[2:]
@@ -764,7 +748,15 @@ def problem_14_b(lines):
             floating_bits = iter(floating_bits)
             yield ''.join(next(floating_bits) if ch == 'X' else ch for ch in addr_template)
 
-    return main()
+    mem = {}
+    for line in lines:
+        if line.startswith('mask'):
+            _, mask = line.split(' = ')
+            continue
+        addr, val = re.search('\[(\d+)\] = (\d+)', line).groups()
+        for address in address_generator(addr, mask):
+            mem[address] = val
+    return sum(int(a) for a in mem.values())
 
 
 ###

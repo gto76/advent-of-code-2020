@@ -557,9 +557,7 @@ acc +6
     <span class="hljs-keyword">import</span> itertools
 
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">is_sum</span><span class="hljs-params">(candidate, numbers)</span>:</span>
-        <span class="hljs-keyword">for</span> pair <span class="hljs-keyword">in</span> itertools.combinations(numbers, <span class="hljs-number">2</span>):
-            <span class="hljs-keyword">if</span> sum(pair) == candidate:
-                <span class="hljs-keyword">return</span> <span class="hljs-keyword">True</span>
+        <span class="hljs-keyword">return</span> any(a + b == candidate <span class="hljs-keyword">for</span> a, b <span class="hljs-keyword">in</span> itertools.combinations(numbers, <span class="hljs-number">2</span>))
 
     numbers = [int(line) <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines]
     <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">25</span>, len(numbers)):
@@ -825,38 +823,24 @@ mem[26] = 1
     <span class="hljs-string">'''51'''</span>
     <span class="hljs-keyword">import</span> re
 
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
-        mem = {}
-        <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines:
-            <span class="hljs-keyword">if</span> line.startswith(<span class="hljs-string">'mask'</span>):
-                _, mask = line.split(<span class="hljs-string">' = '</span>)
-                <span class="hljs-keyword">continue</span>
-            addr, val = re.search(<span class="hljs-string">'\[(\d+)\] = (\d+)'</span>, line).groups()
-            mem[addr] = get_word(val, mask)
-        <span class="hljs-keyword">return</span> sum(int(a, <span class="hljs-number">2</span>) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> mem.values())
-
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_word</span><span class="hljs-params">(val, mask)</span>:</span>
         bin_val = bin(int(val))[<span class="hljs-number">2</span>:]
         bin_val_padded = <span class="hljs-string">'0'</span> * (len(mask)-len(bin_val)) + bin_val
         <span class="hljs-keyword">return</span> <span class="hljs-string">''</span>.join(a <span class="hljs-keyword">if</span> m == <span class="hljs-string">'X'</span> <span class="hljs-keyword">else</span> m <span class="hljs-keyword">for</span> a, m <span class="hljs-keyword">in</span> zip(bin_val_padded, mask))
 
-    <span class="hljs-keyword">return</span> main()
+    mem = {}
+    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines:
+        <span class="hljs-keyword">if</span> line.startswith(<span class="hljs-string">'mask'</span>):
+            _, mask = line.split(<span class="hljs-string">' = '</span>)
+            <span class="hljs-keyword">continue</span>
+        addr, val = re.search(<span class="hljs-string">'\[(\d+)\] = (\d+)'</span>, line).groups()
+        mem[addr] = get_word(val, mask)
+    <span class="hljs-keyword">return</span> sum(int(a, <span class="hljs-number">2</span>) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> mem.values())
 </code></pre></div>
 
 <div><h3 id="executetheinitializationprogramusinganemulatorforaversion2decoderchipwhatisthesumofallvaluesleftinmemoryafteritcompletes">Execute the initialization program using an emulator for a version 2 decoder chip. What is the sum of all values left in memory after it completes?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_14_b</span><span class="hljs-params">(lines)</span>:</span>
     <span class="hljs-string">'''208'''</span>
     <span class="hljs-keyword">import</span> itertools, re
-
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
-        mem = {}
-        <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines:
-            <span class="hljs-keyword">if</span> line.startswith(<span class="hljs-string">'mask'</span>):
-                _, mask = line.split(<span class="hljs-string">' = '</span>)
-                <span class="hljs-keyword">continue</span>
-            addr, val = re.search(<span class="hljs-string">'\[(\d+)\] = (\d+)'</span>, line).groups()
-            <span class="hljs-keyword">for</span> address <span class="hljs-keyword">in</span> address_generator(addr, mask):
-                mem[address] = val
-        <span class="hljs-keyword">return</span> sum(int(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> mem.values())
 
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">address_generator</span><span class="hljs-params">(addr, mask)</span>:</span>
         bin_addr = bin(int(addr))[<span class="hljs-number">2</span>:]
@@ -866,7 +850,15 @@ mem[26] = 1
             floating_bits = iter(floating_bits)
             <span class="hljs-keyword">yield</span> <span class="hljs-string">''</span>.join(next(floating_bits) <span class="hljs-keyword">if</span> ch == <span class="hljs-string">'X'</span> <span class="hljs-keyword">else</span> ch <span class="hljs-keyword">for</span> ch <span class="hljs-keyword">in</span> addr_template)
 
-    <span class="hljs-keyword">return</span> main()
+    mem = {}
+    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines:
+        <span class="hljs-keyword">if</span> line.startswith(<span class="hljs-string">'mask'</span>):
+            _, mask = line.split(<span class="hljs-string">' = '</span>)
+            <span class="hljs-keyword">continue</span>
+        addr, val = re.search(<span class="hljs-string">'\[(\d+)\] = (\d+)'</span>, line).groups()
+        <span class="hljs-keyword">for</span> address <span class="hljs-keyword">in</span> address_generator(addr, mask):
+            mem[address] = val
+    <span class="hljs-keyword">return</span> sum(int(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> mem.values())
 </code></pre></div>
 
 <div><h2 id="day15numbersgame"><a href="#day15numbersgame" name="day15numbersgame">#</a>Day 15: Numbers Game</h2><pre><code class="text language-text">0,3,6
