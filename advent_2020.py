@@ -123,9 +123,11 @@ def problem_3_b(lines):
     listed slopes? 336'''
     import collections, functools, itertools, operator
     P = collections.namedtuple('P', 'x y')
+
     def get_positions(slope):
         x_generator = itertools.count(start=0, step=slope.x)
         return (P(next(x_generator), y) for y in range(0, len(lines), slope.y))
+
     is_tree = lambda p: lines[p.y][p.x % len(lines[0])] == '#'
     count_trees = lambda slope: sum(is_tree(p) for p in get_positions(slope))
     slopes = [P(x=1, y=1), P(x=3, y=1), P(x=5, y=1), P(x=7, y=1), P(x=1, y=2)]
@@ -345,7 +347,6 @@ def problem_8_a(lines):
 def problem_8_b(lines):
     '''Fix the program so that it terminates normally by changing exactly one jmp (to nop) or 
     nop (to jmp). What is the value of the accumulator after the program terminates? 8'''
-
     def main():
         for program in program_generator():
             result = run(program)
@@ -520,7 +521,6 @@ def problem_11_a(lines):
     '''Simulate your seating area by applying the seating rules repeatedly until no seats
     change state. How many seats end up occupied? 37'''
     import collections
-
     P = collections.namedtuple('P', 'x y')
 
     def main():
@@ -635,7 +635,6 @@ def problem_12_b(lines):
     '''Figure out where the navigation instructions actually lead. What is the Manhattan 
     distance between that location and the ship's starting position? 286'''
     import collections
-
     P = collections.namedtuple('P', 'x y')
 
     def main():

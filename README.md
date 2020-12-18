@@ -106,9 +106,11 @@ def problem_3_b(lines):
     '''336'''
     import collections, functools, itertools, operator
     P = collections.namedtuple('P', 'x y')
+
     def get_positions(slope):
         x_generator = itertools.count(start=0, step=slope.x)
         return (P(next(x_generator), y) for y in range(0, len(lines), slope.y))
+
     is_tree = lambda p: lines[p.y][p.x % len(lines[0])] == '#'
     count_trees = lambda slope: sum(is_tree(p) for p in get_positions(slope))
     slopes = [P(x=1, y=1), P(x=3, y=1), P(x=5, y=1), P(x=7, y=1), P(x=1, y=2)]
@@ -344,7 +346,6 @@ def problem_8_a(lines):
 ```python
 def problem_8_b(lines):
     '''8'''
-
     def main():
         for program in program_generator():
             result = run(program)
@@ -523,7 +524,6 @@ L.LLLLL.LL
 def problem_11_a(lines):
     '''37'''
     import collections
-
     P = collections.namedtuple('P', 'x y')
 
     def main():
@@ -642,7 +642,6 @@ def problem_12_a(lines):
 def problem_12_b(lines):
     '''286'''
     import collections
-
     P = collections.namedtuple('P', 'x y')
 
     def main():
