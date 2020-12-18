@@ -901,27 +901,21 @@ def problem_17_a(lines):
     import collections, itertools
     P = collections.namedtuple('P', 'x y z')
 
-    def main():
-        cubes = {P(x, y, 0) for y, line in enumerate(lines)
-                                for x, ch in enumerate(line) if ch == '#'}
-        for _ in range(6):
-            cubes = step(cubes)
-        return len(cubes)
-
-    def step(cubes):
-        def should_be_active(p):
-            n_active_neighbours = len(get_neighbours(p) & cubes)
-            return (p in cubes and 2 <= n_active_neighbours <= 3) or \
-                   (p not in cubes and n_active_neighbours == 3)
-
-        candidates = {p for cube in cubes for p in get_neighbours(cube)}
-        return {p for p in candidates if should_be_active(p)}
-
     def get_neighbours(p):
         DELTAS = set(itertools.product([-1, 0, 1], repeat=3)) - {(0, 0, 0)}
         return {P(p.x + dx, p.y + dy, p.z + dz) for dx, dy, dz in DELTAS}
 
-    return main()
+    def should_be_active(p):
+        n_active_neighbours = len(get_neighbours(p) & cubes)
+        return (p in cubes and 2 <= n_active_neighbours <= 3) or \
+               (p not in cubes and n_active_neighbours == 3)
+
+    cubes = {P(x, y, 0) for y, line in enumerate(lines)
+                            for x, ch in enumerate(line) if ch == '#'}
+    for _ in range(6):
+        candidates = {p for cube in cubes for p in get_neighbours(cube)}
+        cubes = {p for p in candidates if should_be_active(p)}
+    return len(cubes)
 
 
 def problem_17_b(lines):
@@ -930,27 +924,21 @@ def problem_17_b(lines):
     import collections, itertools
     P = collections.namedtuple('P', 'x y z w')
 
-    def main():
-        cubes = {P(x, y, 0, 0) for y, line in enumerate(lines)
-                                   for x, ch in enumerate(line) if ch == '#'}
-        for _ in range(6):
-            cubes = step(cubes)
-        return len(cubes)
-
-    def step(cubes):
-        def should_be_active(p):
-            n_active_neighbours = len(get_neighbours(p) & cubes)
-            return (p in cubes and 2 <= n_active_neighbours <= 3) or \
-                   (p not in cubes and n_active_neighbours == 3)
-
-        candidates = {p for cube in cubes for p in get_neighbours(cube)}
-        return {p for p in candidates if should_be_active(p)}
-
     def get_neighbours(p):
         DELTAS = set(itertools.product([-1, 0, 1], repeat=4)) - {(0, 0, 0, 0)}
-        return {P(p.x + dx, p.y + dy, p.z + dz, p.w + dw) for dx, dy, dz, dw in DELTAS}
+        return {P(p.x+dx, p.y+dy, p.z+dz, p.w+dw) for dx, dy, dz, dw in DELTAS}
 
-    return main()
+    def should_be_active(p):
+        n_active_neighbours = len(get_neighbours(p) & cubes)
+        return (p in cubes and 2 <= n_active_neighbours <= 3) or \
+               (p not in cubes and n_active_neighbours == 3)
+
+    cubes = {P(x, y, 0, 0) for y, line in enumerate(lines)
+                               for x, ch in enumerate(line) if ch == '#'}
+    for _ in range(6):
+        candidates = {p for cube in cubes for p in get_neighbours(cube)}
+        cubes = {p for p in candidates if should_be_active(p)}
+    return len(cubes)
 
 
 # ###

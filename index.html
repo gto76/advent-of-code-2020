@@ -984,27 +984,21 @@ nearby tickets:
     <span class="hljs-keyword">import</span> collections, itertools
     P = collections.namedtuple(<span class="hljs-string">'P'</span>, <span class="hljs-string">'x y z'</span>)
 
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
-        cubes = {P(x, y, <span class="hljs-number">0</span>) <span class="hljs-keyword">for</span> y, line <span class="hljs-keyword">in</span> enumerate(lines)
-                                <span class="hljs-keyword">for</span> x, ch <span class="hljs-keyword">in</span> enumerate(line) <span class="hljs-keyword">if</span> ch == <span class="hljs-string">'#'</span>}
-        <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> range(<span class="hljs-number">6</span>):
-            cubes = step(cubes)
-        <span class="hljs-keyword">return</span> len(cubes)
-
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">step</span><span class="hljs-params">(cubes)</span>:</span>
-        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">should_be_active</span><span class="hljs-params">(p)</span>:</span>
-            n_active_neighbours = len(get_neighbours(p) &amp; cubes)
-            <span class="hljs-keyword">return</span> (p <span class="hljs-keyword">in</span> cubes <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> &lt;= n_active_neighbours &lt;= <span class="hljs-number">3</span>) <span class="hljs-keyword">or</span> \
-                   (p <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> cubes <span class="hljs-keyword">and</span> n_active_neighbours == <span class="hljs-number">3</span>)
-
-        candidates = {p <span class="hljs-keyword">for</span> cube <span class="hljs-keyword">in</span> cubes <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> get_neighbours(cube)}
-        <span class="hljs-keyword">return</span> {p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> candidates <span class="hljs-keyword">if</span> should_be_active(p)}
-
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_neighbours</span><span class="hljs-params">(p)</span>:</span>
         DELTAS = set(itertools.product([<span class="hljs-number">-1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>], repeat=<span class="hljs-number">3</span>)) - {(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>)}
         <span class="hljs-keyword">return</span> {P(p.x + dx, p.y + dy, p.z + dz) <span class="hljs-keyword">for</span> dx, dy, dz <span class="hljs-keyword">in</span> DELTAS}
 
-    <span class="hljs-keyword">return</span> main()
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">should_be_active</span><span class="hljs-params">(p)</span>:</span>
+        n_active_neighbours = len(get_neighbours(p) &amp; cubes)
+        <span class="hljs-keyword">return</span> (p <span class="hljs-keyword">in</span> cubes <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> &lt;= n_active_neighbours &lt;= <span class="hljs-number">3</span>) <span class="hljs-keyword">or</span> \
+               (p <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> cubes <span class="hljs-keyword">and</span> n_active_neighbours == <span class="hljs-number">3</span>)
+
+    cubes = {P(x, y, <span class="hljs-number">0</span>) <span class="hljs-keyword">for</span> y, line <span class="hljs-keyword">in</span> enumerate(lines)
+                            <span class="hljs-keyword">for</span> x, ch <span class="hljs-keyword">in</span> enumerate(line) <span class="hljs-keyword">if</span> ch == <span class="hljs-string">'#'</span>}
+    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> range(<span class="hljs-number">6</span>):
+        candidates = {p <span class="hljs-keyword">for</span> cube <span class="hljs-keyword">in</span> cubes <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> get_neighbours(cube)}
+        cubes = {p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> candidates <span class="hljs-keyword">if</span> should_be_active(p)}
+    <span class="hljs-keyword">return</span> len(cubes)
 </code></pre></div>
 
 <div><h3 id="startingwithyourgiveninitialconfigurationsimulatesixcyclesina4dimensionalspacehowmanycubesareleftintheactivestateafterthesixthcycle">Starting with your given initial configuration, simulate six cycles in a 4-dimensional space. How many cubes are left in the active state after the sixth cycle?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_17_b</span><span class="hljs-params">(lines)</span>:</span>
@@ -1012,27 +1006,21 @@ nearby tickets:
     <span class="hljs-keyword">import</span> collections, itertools
     P = collections.namedtuple(<span class="hljs-string">'P'</span>, <span class="hljs-string">'x y z w'</span>)
 
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
-        cubes = {P(x, y, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>) <span class="hljs-keyword">for</span> y, line <span class="hljs-keyword">in</span> enumerate(lines)
-                                   <span class="hljs-keyword">for</span> x, ch <span class="hljs-keyword">in</span> enumerate(line) <span class="hljs-keyword">if</span> ch == <span class="hljs-string">'#'</span>}
-        <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> range(<span class="hljs-number">6</span>):
-            cubes = step(cubes)
-        <span class="hljs-keyword">return</span> len(cubes)
-
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">step</span><span class="hljs-params">(cubes)</span>:</span>
-        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">should_be_active</span><span class="hljs-params">(p)</span>:</span>
-            n_active_neighbours = len(get_neighbours(p) &amp; cubes)
-            <span class="hljs-keyword">return</span> (p <span class="hljs-keyword">in</span> cubes <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> &lt;= n_active_neighbours &lt;= <span class="hljs-number">3</span>) <span class="hljs-keyword">or</span> \
-                   (p <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> cubes <span class="hljs-keyword">and</span> n_active_neighbours == <span class="hljs-number">3</span>)
-
-        candidates = {p <span class="hljs-keyword">for</span> cube <span class="hljs-keyword">in</span> cubes <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> get_neighbours(cube)}
-        <span class="hljs-keyword">return</span> {p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> candidates <span class="hljs-keyword">if</span> should_be_active(p)}
-
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_neighbours</span><span class="hljs-params">(p)</span>:</span>
         DELTAS = set(itertools.product([<span class="hljs-number">-1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>], repeat=<span class="hljs-number">4</span>)) - {(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>)}
-        <span class="hljs-keyword">return</span> {P(p.x + dx, p.y + dy, p.z + dz, p.w + dw) <span class="hljs-keyword">for</span> dx, dy, dz, dw <span class="hljs-keyword">in</span> DELTAS}
+        <span class="hljs-keyword">return</span> {P(p.x+dx, p.y+dy, p.z+dz, p.w+dw) <span class="hljs-keyword">for</span> dx, dy, dz, dw <span class="hljs-keyword">in</span> DELTAS}
 
-    <span class="hljs-keyword">return</span> main()
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">should_be_active</span><span class="hljs-params">(p)</span>:</span>
+        n_active_neighbours = len(get_neighbours(p) &amp; cubes)
+        <span class="hljs-keyword">return</span> (p <span class="hljs-keyword">in</span> cubes <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> &lt;= n_active_neighbours &lt;= <span class="hljs-number">3</span>) <span class="hljs-keyword">or</span> \
+               (p <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> cubes <span class="hljs-keyword">and</span> n_active_neighbours == <span class="hljs-number">3</span>)
+
+    cubes = {P(x, y, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>) <span class="hljs-keyword">for</span> y, line <span class="hljs-keyword">in</span> enumerate(lines)
+                               <span class="hljs-keyword">for</span> x, ch <span class="hljs-keyword">in</span> enumerate(line) <span class="hljs-keyword">if</span> ch == <span class="hljs-string">'#'</span>}
+    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> range(<span class="hljs-number">6</span>):
+        candidates = {p <span class="hljs-keyword">for</span> cube <span class="hljs-keyword">in</span> cubes <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> get_neighbours(cube)}
+        cubes = {p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> candidates <span class="hljs-keyword">if</span> should_be_active(p)}
+    <span class="hljs-keyword">return</span> len(cubes)
 </code></pre></div>
  
 
