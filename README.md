@@ -844,17 +844,25 @@ def problem_16_b(lines):
     import functools, operator as op, re
 
     def main():
-        fields, your_ticket, nerby_tickets = [a.split('\r') for a in
-                                                  '\r'.join(lines).split('\r\r')]
-        valid_tickets = get_valid_tickets(fields, nerby_tickets[1:] + your_ticket[1:])
-        field_ranges = get_fields_dict(fields)
-        out = {i: set(field_ranges.keys()) for i in range(len(valid_tickets[0]))}
-        purge_solutions(out, valid_tickets, field_ranges)
+        fields, your_ticket, nerby_tickets = \
+            [a.split('\r') for a in '\r'.join(lines).split('\r\r')]
+        field_ranges = get_fields_ranges(fields)
+        tickets = get_valid_tickets(fields, your_ticket[1:] + nerby_tickets[1:])
+        out = {i: set(field_ranges.keys()) for i in range(len(tickets[0]))}
+        purge_solutions(out, field_ranges, tickets)
         while any(len(fields) != 1 for fields in out.values()):
             remove_solved_fields(out)
         your_ticket_vals = [int(a) for a in your_ticket[1].split(',')]
         indices = [i for i, fields in out.items() if 'departure' in next(iter(fields))]
         return functools.reduce(op.mul, (your_ticket_vals[i] for i in indices))
+
+    def get_fields_ranges(fields):
+        def get_item(field):
+            name, start_1, stop_1, start_2, stop_2 = \
+                re.match('^(.*): (\d+)-(\d+) or (\d+)-(\d+)', field).groups()
+            return name, [range(int(start_1), int(stop_1)+1),
+                          range(int(start_2), int(stop_2)+1)]
+        return dict(get_item(field) for field in fields)
 
     def get_valid_tickets(fields, tickets):
         def get_valid_ranges(field):
@@ -867,27 +875,18 @@ def problem_16_b(lines):
         valid_ranges = [range_ for field in fields for range_ in get_valid_ranges(field)]
         return [[int(a) for a in t.split(',')] for t in tickets if is_ticket_valid(t)]
 
-    def get_fields_dict(fields):
-        def get_item(field):
-            name, start_1, stop_1, start_2, stop_2 = \
-                re.match('^(.*): (\d+)-(\d+) or (\d+)-(\d+)', field).groups()
-            return name, [range(int(start_1), int(stop_1)+1),
-                          range(int(start_2), int(stop_2)+1)]
-        return dict(get_item(field) for field in fields)
-
-    def purge_solutions(out, valid_tickets, field_ranges):
-        get_column = lambda i: [a[i] for a in valid_tickets]
-        for i in range(len(valid_tickets[0])):
-            for val in get_column(i):
+    def purge_solutions(out, field_ranges, tickets):
+        get_column = lambda i: [a[i] for a in tickets]
+        for col_index in range(len(tickets[0])):
+            for val in get_column(col_index):
                 for field_name, ranges in field_ranges.items():
                     if all(val not in range_ for range_ in ranges):
-                        out[i] -= {field_name}
+                        out[col_index] -= {field_name}
 
     def remove_solved_fields(out):
         solved_fields = {next(iter(fields)) for fields in out.values() if len(fields) == 1}
         for possible_fields in out.values():
-            if len(possible_fields) != 1:
-                possible_fields -= solved_fields
+            possible_fields -= solved_fields if len(possible_fields) > 1 else {}
 
     return main()
 ```
