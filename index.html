@@ -919,47 +919,38 @@ nearby tickets:
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
         fields, your_ticket, nerby_tickets = \
             [a.split(<span class="hljs-string">'\r'</span>) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> <span class="hljs-string">'\r'</span>.join(lines).split(<span class="hljs-string">'\r\r'</span>)]
-        field_ranges = get_fields_ranges(fields)
-        tickets = get_valid_tickets(fields, your_ticket[<span class="hljs-number">1</span>:] + nerby_tickets[<span class="hljs-number">1</span>:])
-        out = {i: set(field_ranges.keys()) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(tickets[<span class="hljs-number">0</span>]))}
-        purge_solutions(out, field_ranges, tickets)
-        <span class="hljs-keyword">while</span> any(len(fields) != <span class="hljs-number">1</span> <span class="hljs-keyword">for</span> fields <span class="hljs-keyword">in</span> out.values()):
+        field_values = get_field_values(fields)
+        tickets = get_valid_tickets(field_values, your_ticket[<span class="hljs-number">1</span>:] + nerby_tickets[<span class="hljs-number">1</span>:])
+        out = {i: set(field_values.keys()) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(tickets[<span class="hljs-number">0</span>]))}
+        purge_solutions(out, field_values, tickets)
+        <span class="hljs-keyword">while</span> any(len(fields) &gt; <span class="hljs-number">1</span> <span class="hljs-keyword">for</span> fields <span class="hljs-keyword">in</span> out.values()):
             remove_solved_fields(out)
-        your_ticket_vals = [int(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> your_ticket[<span class="hljs-number">1</span>].split(<span class="hljs-string">','</span>)]
         indices = [i <span class="hljs-keyword">for</span> i, fields <span class="hljs-keyword">in</span> out.items() <span class="hljs-keyword">if</span> <span class="hljs-string">'departure'</span> <span class="hljs-keyword">in</span> next(iter(fields))]
-        <span class="hljs-keyword">return</span> functools.reduce(op.mul, (your_ticket_vals[i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> indices))
+        <span class="hljs-keyword">return</span> functools.reduce(op.mul, (tickets[<span class="hljs-number">0</span>][i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> indices))
 
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_fields_ranges</span><span class="hljs-params">(fields)</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_field_values</span><span class="hljs-params">(fields)</span>:</span>
         <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_item</span><span class="hljs-params">(field)</span>:</span>
-            name, start_1, stop_1, start_2, stop_2 = \
-                re.match(<span class="hljs-string">'^(.*): (\d+)-(\d+) or (\d+)-(\d+)'</span>, field).groups()
-            <span class="hljs-keyword">return</span> name, [range(int(start_1), int(stop_1)+<span class="hljs-number">1</span>),
-                          range(int(start_2), int(stop_2)+<span class="hljs-number">1</span>)]
+            name, a, b, c, d = re.match(<span class="hljs-string">'^(.*): (\d+)-(\d+) or (\d+)-(\d+)'</span>, field).groups()
+            <span class="hljs-keyword">return</span> name, set(range(int(a), int(b)+<span class="hljs-number">1</span>)) | set(range(int(c), int(d)+<span class="hljs-number">1</span>))
         <span class="hljs-keyword">return</span> dict(get_item(field) <span class="hljs-keyword">for</span> field <span class="hljs-keyword">in</span> fields)
 
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_valid_tickets</span><span class="hljs-params">(fields, tickets)</span>:</span>
-        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_valid_ranges</span><span class="hljs-params">(field)</span>:</span>
-            <span class="hljs-keyword">for</span> range_ <span class="hljs-keyword">in</span> field.split(<span class="hljs-string">': '</span>)[<span class="hljs-number">1</span>].split(<span class="hljs-string">' or '</span>):
-                start, stop = [int(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> range_.split(<span class="hljs-string">'-'</span>)]
-                <span class="hljs-keyword">yield</span> range(start, stop+<span class="hljs-number">1</span>)
-        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">is_ticket_valid</span><span class="hljs-params">(ticket)</span>:</span>
-            values = [int(value) <span class="hljs-keyword">for</span> value <span class="hljs-keyword">in</span> ticket.split(<span class="hljs-string">','</span>)]
-            <span class="hljs-keyword">return</span> all(any(value <span class="hljs-keyword">in</span> range_ <span class="hljs-keyword">for</span> range_ <span class="hljs-keyword">in</span> valid_ranges) <span class="hljs-keyword">for</span> value <span class="hljs-keyword">in</span> values)
-        valid_ranges = [range_ <span class="hljs-keyword">for</span> field <span class="hljs-keyword">in</span> fields <span class="hljs-keyword">for</span> range_ <span class="hljs-keyword">in</span> get_valid_ranges(field)]
-        <span class="hljs-keyword">return</span> [[int(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> t.split(<span class="hljs-string">','</span>)] <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> tickets <span class="hljs-keyword">if</span> is_ticket_valid(t)]
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_valid_tickets</span><span class="hljs-params">(field_values, tickets)</span>:</span>
+        valid_values = functools.reduce(op.or_, field_values.values())
+        tickets = [[int(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> t.split(<span class="hljs-string">','</span>)] <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> tickets]
+        <span class="hljs-keyword">return</span> tuple(t <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> tickets <span class="hljs-keyword">if</span> set(t) &lt;= valid_values)
 
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">purge_solutions</span><span class="hljs-params">(out, field_ranges, tickets)</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">purge_solutions</span><span class="hljs-params">(out, field_values, tickets)</span>:</span>
         get_column = <span class="hljs-keyword">lambda</span> i: [a[i] <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> tickets]
         <span class="hljs-keyword">for</span> col_index <span class="hljs-keyword">in</span> range(len(tickets[<span class="hljs-number">0</span>])):
             <span class="hljs-keyword">for</span> val <span class="hljs-keyword">in</span> get_column(col_index):
-                <span class="hljs-keyword">for</span> field_name, ranges <span class="hljs-keyword">in</span> field_ranges.items():
-                    <span class="hljs-keyword">if</span> all(val <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> range_ <span class="hljs-keyword">for</span> range_ <span class="hljs-keyword">in</span> ranges):
+                <span class="hljs-keyword">for</span> field_name, values <span class="hljs-keyword">in</span> field_values.items():
+                    <span class="hljs-keyword">if</span> val <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> values:
                         out[col_index] -= {field_name}
 
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">remove_solved_fields</span><span class="hljs-params">(out)</span>:</span>
         solved_fields = {next(iter(fields)) <span class="hljs-keyword">for</span> fields <span class="hljs-keyword">in</span> out.values() <span class="hljs-keyword">if</span> len(fields) == <span class="hljs-number">1</span>}
         <span class="hljs-keyword">for</span> possible_fields <span class="hljs-keyword">in</span> out.values():
-            possible_fields -= solved_fields <span class="hljs-keyword">if</span> len(possible_fields) &gt; <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> {}
+            possible_fields -= solved_fields <span class="hljs-keyword">if</span> len(possible_fields) &gt; <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> set()
 
     <span class="hljs-keyword">return</span> main()
 </code></pre></div>

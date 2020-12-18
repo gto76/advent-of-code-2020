@@ -846,47 +846,38 @@ def problem_16_b(lines):
     def main():
         fields, your_ticket, nerby_tickets = \
             [a.split('\r') for a in '\r'.join(lines).split('\r\r')]
-        field_ranges = get_fields_ranges(fields)
-        tickets = get_valid_tickets(fields, your_ticket[1:] + nerby_tickets[1:])
-        out = {i: set(field_ranges.keys()) for i in range(len(tickets[0]))}
-        purge_solutions(out, field_ranges, tickets)
-        while any(len(fields) != 1 for fields in out.values()):
+        field_values = get_field_values(fields)
+        tickets = get_valid_tickets(field_values, your_ticket[1:] + nerby_tickets[1:])
+        out = {i: set(field_values.keys()) for i in range(len(tickets[0]))}
+        purge_solutions(out, field_values, tickets)
+        while any(len(fields) > 1 for fields in out.values()):
             remove_solved_fields(out)
-        your_ticket_vals = [int(a) for a in your_ticket[1].split(',')]
         indices = [i for i, fields in out.items() if 'departure' in next(iter(fields))]
-        return functools.reduce(op.mul, (your_ticket_vals[i] for i in indices))
+        return functools.reduce(op.mul, (tickets[0][i] for i in indices))
 
-    def get_fields_ranges(fields):
+    def get_field_values(fields):
         def get_item(field):
-            name, start_1, stop_1, start_2, stop_2 = \
-                re.match('^(.*): (\d+)-(\d+) or (\d+)-(\d+)', field).groups()
-            return name, [range(int(start_1), int(stop_1)+1),
-                          range(int(start_2), int(stop_2)+1)]
+            name, a, b, c, d = re.match('^(.*): (\d+)-(\d+) or (\d+)-(\d+)', field).groups()
+            return name, set(range(int(a), int(b)+1)) | set(range(int(c), int(d)+1))
         return dict(get_item(field) for field in fields)
 
-    def get_valid_tickets(fields, tickets):
-        def get_valid_ranges(field):
-            for range_ in field.split(': ')[1].split(' or '):
-                start, stop = [int(a) for a in range_.split('-')]
-                yield range(start, stop+1)
-        def is_ticket_valid(ticket):
-            values = [int(value) for value in ticket.split(',')]
-            return all(any(value in range_ for range_ in valid_ranges) for value in values)
-        valid_ranges = [range_ for field in fields for range_ in get_valid_ranges(field)]
-        return [[int(a) for a in t.split(',')] for t in tickets if is_ticket_valid(t)]
+    def get_valid_tickets(field_values, tickets):
+        valid_values = functools.reduce(op.or_, field_values.values())
+        tickets = [[int(a) for a in t.split(',')] for t in tickets]
+        return tuple(t for t in tickets if set(t) <= valid_values)
 
-    def purge_solutions(out, field_ranges, tickets):
+    def purge_solutions(out, field_values, tickets):
         get_column = lambda i: [a[i] for a in tickets]
         for col_index in range(len(tickets[0])):
             for val in get_column(col_index):
-                for field_name, ranges in field_ranges.items():
-                    if all(val not in range_ for range_ in ranges):
+                for field_name, values in field_values.items():
+                    if val not in values:
                         out[col_index] -= {field_name}
 
     def remove_solved_fields(out):
         solved_fields = {next(iter(fields)) for fields in out.values() if len(fields) == 1}
         for possible_fields in out.values():
-            possible_fields -= solved_fields if len(possible_fields) > 1 else {}
+            possible_fields -= solved_fields if len(possible_fields) > 1 else set()
 
     return main()
 ```
