@@ -1003,6 +1003,49 @@ nearby tickets:
         cubes = {p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> candidates <span class="hljs-keyword">if</span> should_be_active(p)}
     <span class="hljs-keyword">return</span> len(cubes)
 </code></pre></div>
+
+<div><h2 id="day18"><a href="#day18" name="day18">#</a>Day 18</h2><pre><code class="text language-text">5 + (8 * 3 + 9 + 3 * 4 * 3)
+</code></pre></div>
+
+<div><h3 id="beforeyoucanhelpwiththehomeworkyouneedtounderstandityourselfevaluatetheexpressiononeachlineofthehomeworkwhatisthesumoftheresultingvalues">Before you can help with the homework, you need to understand it yourself. Evaluate the expression on each line of the homework; what is the sum of the resulting values?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_18_a</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''437'''</span>
+    <span class="hljs-keyword">import</span> operator <span class="hljs-keyword">as</span> op, re
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">calculate_line</span><span class="hljs-params">(line)</span>:</span>
+        <span class="hljs-keyword">while</span> <span class="hljs-string">'('</span> <span class="hljs-keyword">in</span> line:
+            line = re.sub(<span class="hljs-string">'\(([^()]*?)\)'</span>, <span class="hljs-keyword">lambda</span> m: calculate(m.group(<span class="hljs-number">1</span>)), line)    
+        <span class="hljs-keyword">return</span> int(calculate(line))
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">calculate</span><span class="hljs-params">(s)</span>:</span>
+        out, op_ = <span class="hljs-number">0</span>, op.add
+        <span class="hljs-keyword">for</span> el <span class="hljs-keyword">in</span> s.split():
+            <span class="hljs-keyword">if</span> el.isdigit():
+                out = op_(out, int(el))
+            <span class="hljs-keyword">else</span>:
+                op_ = op.add <span class="hljs-keyword">if</span> el == <span class="hljs-string">'+'</span> <span class="hljs-keyword">else</span> op.mul 
+        <span class="hljs-keyword">return</span> str(out)    
+
+    <span class="hljs-keyword">return</span> sum(calculate_line(line) <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines)
+</code></pre></div>
+
+<div><h3 id="whatdoyougetifyouadduptheresultsofevaluatingthehomeworkproblemsusingthesenewrules">What do you get if you add up the results of evaluating the homework problems using these new rules?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_18_b</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''1445'''</span>
+    <span class="hljs-keyword">import</span> operator <span class="hljs-keyword">as</span> op, re
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">calculate_line</span><span class="hljs-params">(line)</span>:</span>
+        <span class="hljs-keyword">while</span> <span class="hljs-string">'('</span> <span class="hljs-keyword">in</span> line:
+            line = re.sub(<span class="hljs-string">'\(([^()]*?)\)'</span>, <span class="hljs-keyword">lambda</span> m: calculate(m.group(<span class="hljs-number">1</span>)), line)    
+        <span class="hljs-keyword">return</span> int(calculate(line))
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">calculate</span><span class="hljs-params">(s)</span>:</span>
+        <span class="hljs-keyword">while</span> <span class="hljs-string">'+'</span> <span class="hljs-keyword">in</span> s:
+            s = re.sub(<span class="hljs-string">'(\d+) \+ (\d+)'</span>, <span class="hljs-keyword">lambda</span> m: str(int(m.group(<span class="hljs-number">1</span>)) + int(m.group(<span class="hljs-number">2</span>))), s) 
+        <span class="hljs-keyword">while</span> <span class="hljs-string">'*'</span> <span class="hljs-keyword">in</span> s:
+            s = re.sub(<span class="hljs-string">'(\d+) \* (\d+)'</span>, <span class="hljs-keyword">lambda</span> m: str(int(m.group(<span class="hljs-number">1</span>)) * int(m.group(<span class="hljs-number">2</span>))), s) 
+        <span class="hljs-keyword">return</span> s
+
+    <span class="hljs-keyword">return</span> sum(calculate_line(line) <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines)
+</code></pre></div>
  
 
   <footer>

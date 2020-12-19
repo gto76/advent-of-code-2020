@@ -922,6 +922,56 @@ def problem_17_b(lines):
     return len(cubes)
 
 
+###
+##  DAY 18
+#
+
+IN_18 = \
+'''5 + (8 * 3 + 9 + 3 * 4 * 3)'''
+
+
+def problem_18_a(lines):
+    '''Before you can help with the homework, you need to understand it yourself. Evaluate the
+    expression on each line of the homework; what is the sum of the resulting values? 437'''
+    import operator as op, re
+
+    def calculate_line(line):
+        while '(' in line:
+            line = re.sub('\(([^()]*?)\)', lambda m: calculate(m.group(1)), line)    
+        return int(calculate(line))
+
+    def calculate(s):
+        out, op_ = 0, op.add
+        for el in s.split():
+            if el.isdigit():
+                out = op_(out, int(el))
+            else:
+                op_ = op.add if el == '+' else op.mul 
+        return str(out)    
+
+    return sum(calculate_line(line) for line in lines)
+
+
+def problem_18_b(lines):
+    '''What do you get if you add up the results of evaluating the homework problems using
+    these new rules? 1445'''
+    import operator as op, re
+
+    def calculate_line(line):
+        while '(' in line:
+            line = re.sub('\(([^()]*?)\)', lambda m: calculate(m.group(1)), line)    
+        return int(calculate(line))
+
+    def calculate(s):
+        while '+' in s:
+            s = re.sub('(\d+) \+ (\d+)', lambda m: str(int(m.group(1)) + int(m.group(2))), s) 
+        while '*' in s:
+            s = re.sub('(\d+) \* (\d+)', lambda m: str(int(m.group(1)) * int(m.group(2))), s) 
+        return s
+
+    return sum(calculate_line(line) for line in lines)
+
+
 # ###
 # ##  DAY X
 # #
