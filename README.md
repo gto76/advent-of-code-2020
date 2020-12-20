@@ -977,17 +977,80 @@ def problem_18_b(lines):
     '''1445'''
     import operator as op, re
 
-    def calculate_line(line):
-        while '(' in line:
-            line = re.sub('\(([^()]*?)\)', lambda m: calculate(m.group(1)), line)    
-        return int(calculate(line))
-
     def calculate(s):
+        while '(' in s:
+            s = re.sub('\(([^()]*?)\)', lambda m: calculate(m.group(1)), s)
         while '+' in s:
-            s = re.sub('(\d+) \+ (\d+)', lambda m: str(int(m.group(1)) + int(m.group(2))), s) 
+            s = re.sub('(\d+) \+ (\d+)', lambda m: str(int(m.group(1)) + int(m.group(2))), s)
         while '*' in s:
-            s = re.sub('(\d+) \* (\d+)', lambda m: str(int(m.group(1)) * int(m.group(2))), s) 
+            s = re.sub('(\d+) \* (\d+)', lambda m: str(int(m.group(1)) * int(m.group(2))), s)
         return s
 
-    return sum(calculate_line(line) for line in lines)
+    return sum(int(calculate(line)) for line in lines)
+```
+
+## Day 19
+
+```text
+0: 4 1 5
+1: 2 3 | 3 2
+2: 4 4 | 5 5
+3: 4 5 | 5 4
+4: "a"
+5: "b"
+
+ababbb
+bababa
+abbbab
+aaabbb
+aaaabbb
+```
+
+### How many messages completely match rule 0?
+
+```python
+def problem_19_a(lines):
+    '''2'''
+    def parse_rules(rules):
+        out = {}
+        for rule in rules:
+            key, value = rule.split(': ')
+            if '"' in value:
+                out[key] = value.strip('"')
+            elif '|' in value:
+                l, r = value.split('|')
+                out[key] = (l.split(), r.split())
+            else:
+                out[key] = (value.split(), )
+        return out
+
+    def is_valid(message, so_far, rule_id):
+        subrules = rules[rule_id]
+        if type(subrules) == str:
+            return so_far + subrules if message.startswith(so_far + subrules) else False
+        elif len(subrules) == 1:
+            tmp = so_far
+            for subrule in subrules[0]:
+                tmp = is_valid(message, tmp, subrule)
+                if tmp == False:
+                    return False
+            return message == tmp if rule_id == '0' else tmp
+        else:
+            for s in subrules:
+                tmp = so_far
+                for subrule in s:
+                    tmp = is_valid(message, tmp, subrule)
+                    if tmp == False:
+                        break
+                if tmp:
+                    return tmp
+            return False
+
+    rules, messages = [a.split('\r') for a in '\r'.join(lines).split('\r\r')]
+    rules = parse_rules(rules)
+    return sum(is_valid(m, '', '0') for m in messages)
+
+
+# def problem_19_b(lines):
+#     ''''''
 ```
