@@ -1004,7 +1004,7 @@ nearby tickets:
     <span class="hljs-keyword">return</span> len(cubes)
 </code></pre></div>
 
-<div><h2 id="day18"><a href="#day18" name="day18">#</a>Day 18</h2><pre><code class="text language-text">5 + (8 * 3 + 9 + 3 * 4 * 3)
+<div><h2 id="day18equations"><a href="#day18equations" name="day18equations">#</a>Day 18: Equations</h2><pre><code class="text language-text">5 + (8 * 3 + 9 + 3 * 4 * 3)
 </code></pre></div>
 
 <div><h3 id="beforeyoucanhelpwiththehomeworkyouneedtounderstandityourselfevaluatetheexpressiononeachlineofthehomeworkwhatisthesumoftheresultingvalues">Before you can help with the homework, you need to understand it yourself. Evaluate the expression on each line of the homework; what is the sum of the resulting values?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_18_a</span><span class="hljs-params">(lines)</span>:</span>
@@ -1044,34 +1044,62 @@ nearby tickets:
     <span class="hljs-keyword">return</span> sum(int(calculate(line)) <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines)
 </code></pre></div>
 
-<div><h2 id="day19"><a href="#day19" name="day19">#</a>Day 19</h2><pre><code class="text language-text">0: 4 1 5
-1: 2 3 | 3 2
-2: 4 4 | 5 5
-3: 4 5 | 5 4
-4: "a"
-5: "b"
+<div><h2 id="day19grammarrules"><a href="#day19grammarrules" name="day19grammarrules">#</a>Day 19: Grammar Rules</h2><pre><code class="text language-text">42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: "a"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: "b"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
 
-ababbb
-bababa
-abbbab
-aaabbb
-aaaabbb
+abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+bbabbbbaabaabba
+babbbbaabbbbbabbbbbbaabaaabaaa
+aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+bbbbbbbaaaabbbbaaabbabaaa
+bbbababbbbaaaaaaaabbababaaababaabab
+ababaaaaaabaaab
+ababaaaaabbbaba
+baabbaaaabbaaaababbaababb
+abbbbabbbbaaaababbbbbbaaaababb
+aaaaabbaabaaaaababaa
+aaaabbaaaabbaaa
+aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+babaaabbbaaabaababbaabababaaab
+aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
 </code></pre></div>
 
 <div><h3 id="howmanymessagescompletelymatchrule0">How many messages completely match rule 0?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_19_a</span><span class="hljs-params">(lines)</span>:</span>
-    <span class="hljs-string">'''2'''</span>
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parse_rules</span><span class="hljs-params">(rules)</span>:</span>
-        out = {}
-        <span class="hljs-keyword">for</span> rule <span class="hljs-keyword">in</span> rules:
-            key, value = rule.split(<span class="hljs-string">': '</span>)
-            <span class="hljs-keyword">if</span> <span class="hljs-string">'"'</span> <span class="hljs-keyword">in</span> value:
-                out[key] = value.strip(<span class="hljs-string">'"'</span>)
-            <span class="hljs-keyword">elif</span> <span class="hljs-string">'|'</span> <span class="hljs-keyword">in</span> value:
-                l, r = value.split(<span class="hljs-string">'|'</span>)
-                out[key] = (l.split(), r.split())
-            <span class="hljs-keyword">else</span>:
-                out[key] = (value.split(), )
-        <span class="hljs-keyword">return</span> out
+    <span class="hljs-string">'''3'''</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parse_rule</span><span class="hljs-params">(line)</span>:</span>
+        id_, value = line.split(<span class="hljs-string">': '</span>)
+        <span class="hljs-keyword">if</span> <span class="hljs-string">'"'</span> <span class="hljs-keyword">in</span> value:
+            <span class="hljs-keyword">return</span> id_, value.strip(<span class="hljs-string">'"'</span>)
+        <span class="hljs-keyword">return</span> id_, [a.split() <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> value.split(<span class="hljs-string">'|'</span>)]
 
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">is_valid</span><span class="hljs-params">(message, so_far, rule_id)</span>:</span>
         subrules = rules[rule_id]
@@ -1095,13 +1123,32 @@ aaaabbb
                     <span class="hljs-keyword">return</span> tmp
             <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span>
 
-    rules, messages = [a.split(<span class="hljs-string">'\r'</span>) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> <span class="hljs-string">'\r'</span>.join(lines).split(<span class="hljs-string">'\r\r'</span>)]
-    rules = parse_rules(rules)
+    rule_lines, messages = [a.split(<span class="hljs-string">'\r'</span>) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> <span class="hljs-string">'\r'</span>.join(lines).split(<span class="hljs-string">'\r\r'</span>)]
+    rules = dict(parse_rule(l) <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> rule_lines)
     <span class="hljs-keyword">return</span> sum(is_valid(m, <span class="hljs-string">''</span>, <span class="hljs-string">'0'</span>) <span class="hljs-keyword">for</span> m <span class="hljs-keyword">in</span> messages)
+</code></pre></div>
 
+<div><h3 id="afterupdatingrules8and11howmanymessagescompletelymatchrule0">After updating rules 8 and 11, how many messages completely match rule 0?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_19_b</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''12'''</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parse_rule</span><span class="hljs-params">(line)</span>:</span>
+        id_, value = line.split(<span class="hljs-string">': '</span>)
+        <span class="hljs-keyword">if</span> <span class="hljs-string">'"'</span> <span class="hljs-keyword">in</span> value:
+            <span class="hljs-keyword">return</span> int(id_), value
+        <span class="hljs-keyword">return</span> int(id_), [[int(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> v.split()] <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> value.split(<span class="hljs-string">'|'</span>)]
 
-<span class="hljs-comment"># def problem_19_b(lines):</span>
-<span class="hljs-comment">#     ''''''</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">is_valid</span><span class="hljs-params">(message, seq)</span>:</span>
+        <span class="hljs-keyword">if</span> message == <span class="hljs-string">''</span> <span class="hljs-keyword">or</span> seq == []:
+            <span class="hljs-keyword">return</span> message == <span class="hljs-string">''</span> <span class="hljs-keyword">and</span> seq == []
+        rule = rules[seq[<span class="hljs-number">0</span>]]
+        <span class="hljs-keyword">if</span> <span class="hljs-string">'"'</span> <span class="hljs-keyword">in</span> rule:
+            <span class="hljs-keyword">return</span> is_valid(message[<span class="hljs-number">1</span>:], seq[<span class="hljs-number">1</span>:]) <span class="hljs-keyword">if</span> message[<span class="hljs-number">0</span>] <span class="hljs-keyword">in</span> rule <span class="hljs-keyword">else</span> <span class="hljs-keyword">False</span>
+        <span class="hljs-keyword">else</span>:
+            <span class="hljs-keyword">return</span> any(is_valid(message, r + seq[<span class="hljs-number">1</span>:]) <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> rule)
+
+    rule_lines, messages = [a.split(<span class="hljs-string">'\r'</span>) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> <span class="hljs-string">'\r'</span>.join(lines).split(<span class="hljs-string">'\r\r'</span>)]
+    rule_lines += [<span class="hljs-string">'8: 42 | 42 8'</span>, <span class="hljs-string">'11: 42 31 | 42 11 31'</span>]
+    rules = dict(parse_rule(l) <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> rule_lines)
+    <span class="hljs-keyword">return</span> sum(is_valid(m, [<span class="hljs-number">0</span>]) <span class="hljs-keyword">for</span> m <span class="hljs-keyword">in</span> messages)
 </code></pre></div>
  
 

@@ -940,7 +940,7 @@ def problem_17_b(lines):
     return len(cubes)
 ```
 
-## Day 18
+## Day 18: Equations
 
 ```text
 5 + (8 * 3 + 9 + 3 * 4 * 3)
@@ -989,40 +989,68 @@ def problem_18_b(lines):
     return sum(int(calculate(line)) for line in lines)
 ```
 
-## Day 19
+## Day 19: Grammar Rules
 
 ```text
-0: 4 1 5
-1: 2 3 | 3 2
-2: 4 4 | 5 5
-3: 4 5 | 5 4
-4: "a"
-5: "b"
+42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: "a"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: "b"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
 
-ababbb
-bababa
-abbbab
-aaabbb
-aaaabbb
+abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+bbabbbbaabaabba
+babbbbaabbbbbabbbbbbaabaaabaaa
+aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+bbbbbbbaaaabbbbaaabbabaaa
+bbbababbbbaaaaaaaabbababaaababaabab
+ababaaaaaabaaab
+ababaaaaabbbaba
+baabbaaaabbaaaababbaababb
+abbbbabbbbaaaababbbbbbaaaababb
+aaaaabbaabaaaaababaa
+aaaabbaaaabbaaa
+aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+babaaabbbaaabaababbaabababaaab
+aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
 ```
 
 ### How many messages completely match rule 0?
 
 ```python
 def problem_19_a(lines):
-    '''2'''
-    def parse_rules(rules):
-        out = {}
-        for rule in rules:
-            key, value = rule.split(': ')
-            if '"' in value:
-                out[key] = value.strip('"')
-            elif '|' in value:
-                l, r = value.split('|')
-                out[key] = (l.split(), r.split())
-            else:
-                out[key] = (value.split(), )
-        return out
+    '''3'''
+    def parse_rule(line):
+        id_, value = line.split(': ')
+        if '"' in value:
+            return id_, value.strip('"')
+        return id_, [a.split() for a in value.split('|')]
 
     def is_valid(message, so_far, rule_id):
         subrules = rules[rule_id]
@@ -1046,11 +1074,33 @@ def problem_19_a(lines):
                     return tmp
             return False
 
-    rules, messages = [a.split('\r') for a in '\r'.join(lines).split('\r\r')]
-    rules = parse_rules(rules)
+    rule_lines, messages = [a.split('\r') for a in '\r'.join(lines).split('\r\r')]
+    rules = dict(parse_rule(l) for l in rule_lines)
     return sum(is_valid(m, '', '0') for m in messages)
+```
 
+### After updating rules 8 and 11, how many messages completely match rule 0?
 
-# def problem_19_b(lines):
-#     ''''''
+```python
+def problem_19_b(lines):
+    '''12'''
+    def parse_rule(line):
+        id_, value = line.split(': ')
+        if '"' in value:
+            return int(id_), value
+        return int(id_), [[int(a) for a in v.split()] for v in value.split('|')]
+
+    def is_valid(message, seq):
+        if message == '' or seq == []:
+            return message == '' and seq == []
+        rule = rules[seq[0]]
+        if '"' in rule:
+            return is_valid(message[1:], seq[1:]) if message[0] in rule else False
+        else:
+            return any(is_valid(message, r + seq[1:]) for r in rule)
+
+    rule_lines, messages = [a.split('\r') for a in '\r'.join(lines).split('\r\r')]
+    rule_lines += ['8: 42 | 42 8', '11: 42 31 | 42 11 31']
+    rules = dict(parse_rule(l) for l in rule_lines)
+    return sum(is_valid(m, [0]) for m in messages)
 ```
