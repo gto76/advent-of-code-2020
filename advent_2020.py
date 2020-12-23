@@ -10,8 +10,9 @@
 def main():
     import inspect
     functions = [a for a in globals().values() if callable(a) and a.__name__ != 'main']
-    print(' ' * len(functions) + ' |\r|', end='', flush=True)
-    for function in reversed(functions):
+    print('|' + ' ' * len(functions) + ' |', end='', flush=True)
+    for i, function in enumerate(reversed(functions), 1):
+        print(function.__name__ + ' ', end='', flush=True)
         no_of_params = len(inspect.signature(function).parameters)
         if no_of_params > 0:
             input_name = 'IN_' + function.__name__.split('_')[1]
@@ -24,13 +25,13 @@ def main():
             print(f'\nFunction "{function.__name__}" returned {result} instead of',
                   f'{expected_result}.')
             break
-        print('█', end='', flush=True)
+        print('\r|' + '█'*i + ' '*(len(functions)-i) + '| ', end='', flush=True)
     else:
         print('\nAll tests passed.')
 
 
 ###
-##  DAY 1
+##  DAY 1: Entries
 #
 
 IN_1 = \
@@ -63,7 +64,7 @@ def problem_1_b(lines):
 
 
 ###
-##  DAY 2
+##  DAY 2: Passwords
 #
 
 IN_2 = \
@@ -91,7 +92,7 @@ def problem_2_b(lines):
 
 
 ###
-##  DAY 3
+##  DAY 3: Trees
 #
 
 IN_3 = \
@@ -135,7 +136,7 @@ def problem_3_b(lines):
 
 
 ###
-##  DAY 4
+##  DAY 4: Passports
 #
 
 IN_4 = \
@@ -189,7 +190,7 @@ def problem_4_b(lines):
 
 
 ###
-##  DAY 5
+##  DAY 5: Seat IDs
 #
 
 IN_5 = \
@@ -215,7 +216,7 @@ def problem_5_b(lines):
 
 
 ###
-##  DAY 6
+##  DAY 6: Survey
 #
 
 IN_6 = \
@@ -254,7 +255,7 @@ def problem_6_b(lines):
 
 
 ###
-##  DAY 7
+##  DAY 7: Bags
 #
 
 IN_7 = \
@@ -311,7 +312,7 @@ def problem_7_b(lines):
 
 
 ###
-##  DAY 8
+##  DAY 8: Program
 #
 
 IN_8 = \
@@ -381,7 +382,7 @@ def problem_8_b(lines):
 
 
 ###
-##  DAY 9
+##  DAY 9: Encryption
 #
 
 IN_9 = \
@@ -443,7 +444,7 @@ def problem_9_b(lines):
 
 
 ###
-##  DAY 10
+##  DAY 10: Adapters
 #
 
 IN_10 = \
@@ -501,7 +502,7 @@ def problem_10_b(lines):
 
 
 ###
-##  DAY 11
+##  DAY 11: Seats
 #
 
 IN_11 = \
@@ -584,7 +585,7 @@ def problem_11_b(lines):
 
 
 ###
-##  DAY 12
+##  DAY 12: Navigation
 #
 
 IN_12 = \
@@ -668,7 +669,7 @@ def problem_12_b(lines):
 
 
 ###
-##  DAY 13
+##  DAY 13: Buses
 #
 
 IN_13 = \
@@ -704,7 +705,7 @@ def problem_13_b(lines):
 
 
 ###
-##  DAY 14
+##  DAY 14: Bitmasks
 #
 
 IN_14 = \
@@ -759,7 +760,7 @@ def problem_14_b(lines):
 
 
 ###
-##  DAY 15
+##  DAY 15: Numbers Game
 #
 
 IN_15 = \
@@ -788,7 +789,7 @@ def problem_15_b(lines):
 
 
 ###
-##  DAY 16
+##  DAY 16: Tickets
 #
 
 IN_16 = \
@@ -867,7 +868,7 @@ def problem_16_b(lines):
 
 
 ###
-##  DAY 17
+##  DAY 17: Cubes
 #
 
 IN_17 = \
@@ -923,7 +924,7 @@ def problem_17_b(lines):
 
 
 ###
-##  DAY 18
+##  DAY 18: Equations
 #
 
 IN_18 = \
@@ -970,7 +971,7 @@ def problem_18_b(lines):
 
 
 ###
-##  DAY 19
+##  DAY 19: Grammar Rules
 #
 
 IN_19 = \
@@ -1082,7 +1083,7 @@ def problem_19_b(lines):
 
 
 ###
-##  DAY 20
+##  DAY 20: Tiles
 #
 
 IN_20 = \

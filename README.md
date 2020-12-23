@@ -4,7 +4,7 @@
 
 <p class="banner"><img src="web/image_888.png" alt="Advent of Code"></p>
 
-## Day 1: Entries
+##  Day 1: Entries
 
 ```text
 1721
@@ -39,7 +39,7 @@ def problem_1_b(lines):
             return a * b * c
 ```
 
-## Day 2: Passwords
+##  Day 2: Passwords
 
 ```text
 1-3 a: abcde
@@ -71,7 +71,7 @@ def problem_2_b(lines):
     return sum(is_valid(line) for line in lines)
 ```
 
-## Day 3: Trees
+##  Day 3: Trees
 
 ```text
 ..##.......
@@ -117,7 +117,7 @@ def problem_3_b(lines):
     return functools.reduce(operator.mul, (count_trees(slope) for slope in slopes))
 ```
 
-## Day 4: Passports
+##  Day 4: Passports
 
 ```text
 ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
@@ -175,7 +175,7 @@ def problem_4_b(lines):
     return sum(is_passport_valid(p) for p in passports)
 ```
 
-## Day 5: Seat IDs
+##  Day 5: Seat IDs
 
 ```text
 BBFFBBFLLR
@@ -205,7 +205,7 @@ def problem_5_b(lines):
     return (set(all_ids) - taken_ids).pop()
 ```
 
-## Day 6: Answers
+##  Day 6: Survey
 
 ```text
 abc
@@ -246,7 +246,7 @@ def problem_6_b(lines):
     return sum(len(get_common_answers(group)) for group in groups)
 ```
 
-## Day 7: Bags
+##  Day 7: Bags
 
 ```text
 light red bags contain 1 bright white bag, 2 muted yellow bags.
@@ -307,7 +307,7 @@ def problem_7_b(lines):
     return get_n_bags('shiny gold') - 1
 ```
 
-## Day 8: Program
+##  Day 8: Program
 
 ```text
 nop +0
@@ -379,7 +379,7 @@ def problem_8_b(lines):
     return main()
 ```
 
-## Day 9: Encryption
+##  Day 9: Encryption
 
 ```text
 20
@@ -443,7 +443,7 @@ def problem_9_b(lines):
                 break
 ```
 
-## Day 10: Adapters
+##  Day 10: Adapters
 
 ```text
 28
@@ -503,7 +503,7 @@ def problem_10_b(lines):
     return functools.reduce(op.mul, dd)
 ```
 
-## Day 11: Seats
+##  Day 11: Seats
 
 ```text
 L.LL.LL.LL
@@ -588,7 +588,7 @@ def problem_11_b(lines):
     return main()
 ```
 
-## Day 12: Navigation
+##  Day 12: Navigation
 
 ```text
 F10
@@ -674,7 +674,7 @@ def problem_12_b(lines):
     return main()
 ```
 
-## Day 13: Buses
+##  Day 13: Buses
 
 ```text
 939
@@ -712,7 +712,7 @@ def problem_13_b(lines):
     return stamp
 ```
 
-## Day 14: Bitmasks
+##  Day 14: Bitmasks
 
 ```text
 mask = 000000000000000000000000000000X1001X
@@ -769,7 +769,7 @@ def problem_14_b(lines):
     return sum(int(a) for a in mem.values())
 ```
 
-## Day 15: Numbers Game
+##  Day 15: Numbers Game
 
 ```text
 0,3,6
@@ -802,7 +802,7 @@ def problem_15_b(lines):
     return last_spoken
 ```
 
-## Day 16: Tickets
+##  Day 16: Tickets
 
 ```text
 class: 1-3 or 5-7
@@ -882,7 +882,7 @@ def problem_16_b(lines):
     return main()
 ```
 
-## Day 17: Cubes
+##  Day 17: Cubes
 
 ```text
 .#.
@@ -940,7 +940,7 @@ def problem_17_b(lines):
     return len(cubes)
 ```
 
-## Day 18: Equations
+##  Day 18: Equations
 
 ```text
 5 + (8 * 3 + 9 + 3 * 4 * 3)
@@ -989,7 +989,7 @@ def problem_18_b(lines):
     return sum(int(calculate(line)) for line in lines)
 ```
 
-## Day 19: Grammar Rules
+##  Day 19: Grammar Rules
 
 ```text
 42: 9 14 | 10 1
@@ -1105,7 +1105,7 @@ def problem_19_b(lines):
     return sum(is_valid(m, [0]) for m in messages)
 ```
 
-## Day 20
+##  Day 20: Tiles
 
 ```text
 Tile 2311:

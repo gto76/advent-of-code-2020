@@ -7,10 +7,6 @@
 import os, pathlib, re
 
 
-TITLES = ['Entries', 'Passwords', 'Trees', 'Passports', 'Seat IDs', 'Answers', 'Bags', 
-          'Program', 'Encryption', 'Adapters', 'Seats', 'Navigation', 'Buses', 'Bitmasks',
-          'Numbers Game', 'Tickets', 'Cubes', 'Equations', 'Grammar Rules']
-
 LINKS = '<p class="banner"><sup><a href="https://adventofcode.com/2020">Go to the site' + \
         '</a>, <a href="https://raw.githubusercontent.com/gto76/advent-of-code-2020/' + \
         'master/advent_2020.py">Download Python script</a> or <a href="https://github.com/' + \
@@ -33,9 +29,7 @@ def main():
 
 
 def process_title(text):
-    day = int(re.search('\d+', text).group())
-    title = '' if len(TITLES) < day else f': {TITLES[day-1]}'
-    return f'## Day {day}{title}'
+    return text.replace('DAY', 'Day')
 
 
 def process_def(text):
