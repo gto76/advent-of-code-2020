@@ -1104,3 +1104,154 @@ def problem_19_b(lines):
     rules = dict(parse_rule(l) for l in rule_lines)
     return sum(is_valid(m, [0]) for m in messages)
 ```
+
+## Day 20
+
+```text
+Tile 2311:
+..##.#..#.
+##..#.....
+#...##..#.
+####.#...#
+##.##.###.
+##...#.###
+.#.#.#..##
+..#....#..
+###...#.#.
+..###..###
+
+Tile 1951:
+#.##...##.
+#.####...#
+.....#..##
+#...######
+.##.#....#
+.###.#####
+###.##.##.
+.###....#.
+..#.#..#.#
+#...##.#..
+
+Tile 1171:
+####...##.
+#..##.#..#
+##.#..#.#.
+.###.####.
+..###.####
+.##....##.
+.#...####.
+#.##.####.
+####..#...
+.....##...
+
+Tile 1427:
+###.##.#..
+.#..#.##..
+.#.##.#..#
+#.#.#.##.#
+....#...##
+...##..##.
+...#.#####
+.#.####.#.
+..#..###.#
+..##.#..#.
+
+Tile 1489:
+##.#.#....
+..##...#..
+.##..##...
+..#...#...
+#####...#.
+#..#.#.#.#
+...#.#.#..
+##.#...##.
+..##.##.##
+###.##.#..
+
+Tile 2473:
+#....####.
+#..#.##...
+#.##..#...
+######.#.#
+.#...#.#.#
+.#########
+.###.#..#.
+########.#
+##...##.#.
+..###.#.#.
+
+Tile 2971:
+..#.#....#
+#...###...
+#.#.###...
+##.##..#..
+.#####..##
+.#..####.#
+#..#.#..#.
+..####.###
+..#.#.###.
+...#.#.#.#
+
+Tile 2729:
+...#.#.#.#
+####.#....
+..#.#.....
+....#..#.#
+.##..##.#.
+.#.####...
+####.#.#..
+##.####...
+##..#.##..
+#.##...##.
+
+Tile 3079:
+#.#.#####.
+.#..######
+..#.......
+######....
+####.#..#.
+.#...#.##.
+#.#####.##
+..#.###...
+..#.......
+..#.###...
+```
+
+### Assemble the tiles into an image. What do you get if you multiply together the IDs of the four corner tiles?
+
+```python
+def problem_20_a(lines):
+    '''20899048083289'''
+    import collections
+
+    def get_tile(tile_lines):
+        Tile = collections.namedtuple('Tile', 'id sides')
+        id_, *rows = tile_lines
+        sides = [rows[0], ''.join(r[-1] for r in rows), rows[-1], ''.join(r[0] for r in rows)]
+        sides += [''.join(reversed(a)) for a in sides]
+        return Tile(int(id_[-5:-1]), sides)
+
+    def count_sides(tiles):
+        side_counter = collections.Counter()
+        for tile in tiles:
+            for side in tile.sides:
+                side_counter[side] += 1
+        return side_counter
+
+    tiles_lines = [a.split('\r') for a in '\r'.join(lines).split('\r\r')]
+    tiles = [get_tile(tile_lines) for tile_lines in tiles_lines]
+    side_counter = count_sides(tiles)
+
+    out = 1
+    for tile in tiles:
+        if sum(side_counter[side] == 1 for side in tile.sides) == 4:
+            out *= tile.id
+    return out
+
+
+
+
+
+# def problem_20_b(lines):
+#     ''''''
+```

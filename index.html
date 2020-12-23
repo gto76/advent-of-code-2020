@@ -1150,6 +1150,151 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
     rules = dict(parse_rule(l) <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> rule_lines)
     <span class="hljs-keyword">return</span> sum(is_valid(m, [<span class="hljs-number">0</span>]) <span class="hljs-keyword">for</span> m <span class="hljs-keyword">in</span> messages)
 </code></pre></div>
+
+<div><h2 id="day20"><a href="#day20" name="day20">#</a>Day 20</h2><pre><code class="text language-text">Tile 2311:
+..##.#..#.
+##..#.....
+#...##..#.
+####.#...#
+##.##.###.
+##...#.###
+.#.#.#..##
+..#....#..
+###...#.#.
+..###..###
+
+Tile 1951:
+#.##...##.
+#.####...#
+.....#..##
+#...######
+.##.#....#
+.###.#####
+###.##.##.
+.###....#.
+..#.#..#.#
+#...##.#..
+
+Tile 1171:
+####...##.
+#..##.#..#
+##.#..#.#.
+.###.####.
+..###.####
+.##....##.
+.#...####.
+#.##.####.
+####..#...
+.....##...
+
+Tile 1427:
+###.##.#..
+.#..#.##..
+.#.##.#..#
+#.#.#.##.#
+....#...##
+...##..##.
+...#.#####
+.#.####.#.
+..#..###.#
+..##.#..#.
+
+Tile 1489:
+##.#.#....
+..##...#..
+.##..##...
+..#...#...
+#####...#.
+#..#.#.#.#
+...#.#.#..
+##.#...##.
+..##.##.##
+###.##.#..
+
+Tile 2473:
+#....####.
+#..#.##...
+#.##..#...
+######.#.#
+.#...#.#.#
+.#########
+.###.#..#.
+########.#
+##...##.#.
+..###.#.#.
+
+Tile 2971:
+..#.#....#
+#...###...
+#.#.###...
+##.##..#..
+.#####..##
+.#..####.#
+#..#.#..#.
+..####.###
+..#.#.###.
+...#.#.#.#
+
+Tile 2729:
+...#.#.#.#
+####.#....
+..#.#.....
+....#..#.#
+.##..##.#.
+.#.####...
+####.#.#..
+##.####...
+##..#.##..
+#.##...##.
+
+Tile 3079:
+#.#.#####.
+.#..######
+..#.......
+######....
+####.#..#.
+.#...#.##.
+#.#####.##
+..#.###...
+..#.......
+..#.###...
+</code></pre></div>
+
+<div><h3 id="assemblethetilesintoanimagewhatdoyougetifyoumultiplytogethertheidsofthefourcornertiles">Assemble the tiles into an image. What do you get if you multiply together the IDs of the four corner tiles?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_20_a</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''20899048083289'''</span>
+    <span class="hljs-keyword">import</span> collections
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_tile</span><span class="hljs-params">(tile_lines)</span>:</span>
+        Tile = collections.namedtuple(<span class="hljs-string">'Tile'</span>, <span class="hljs-string">'id sides'</span>)
+        id_, *rows = tile_lines
+        sides = [rows[<span class="hljs-number">0</span>], <span class="hljs-string">''</span>.join(r[<span class="hljs-number">-1</span>] <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> rows), rows[<span class="hljs-number">-1</span>], <span class="hljs-string">''</span>.join(r[<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> rows)]
+        sides += [<span class="hljs-string">''</span>.join(reversed(a)) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> sides]
+        <span class="hljs-keyword">return</span> Tile(int(id_[<span class="hljs-number">-5</span>:<span class="hljs-number">-1</span>]), sides)
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">count_sides</span><span class="hljs-params">(tiles)</span>:</span>
+        side_counter = collections.Counter()
+        <span class="hljs-keyword">for</span> tile <span class="hljs-keyword">in</span> tiles:
+            <span class="hljs-keyword">for</span> side <span class="hljs-keyword">in</span> tile.sides:
+                side_counter[side] += <span class="hljs-number">1</span>
+        <span class="hljs-keyword">return</span> side_counter
+
+    tiles_lines = [a.split(<span class="hljs-string">'\r'</span>) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> <span class="hljs-string">'\r'</span>.join(lines).split(<span class="hljs-string">'\r\r'</span>)]
+    tiles = [get_tile(tile_lines) <span class="hljs-keyword">for</span> tile_lines <span class="hljs-keyword">in</span> tiles_lines]
+    side_counter = count_sides(tiles)
+
+    out = <span class="hljs-number">1</span>
+    <span class="hljs-keyword">for</span> tile <span class="hljs-keyword">in</span> tiles:
+        <span class="hljs-keyword">if</span> sum(side_counter[side] == <span class="hljs-number">1</span> <span class="hljs-keyword">for</span> side <span class="hljs-keyword">in</span> tile.sides) == <span class="hljs-number">4</span>:
+            out *= tile.id
+    <span class="hljs-keyword">return</span> out
+
+
+
+
+
+<span class="hljs-comment"># def problem_20_b(lines):</span>
+<span class="hljs-comment">#     ''''''</span>
+</code></pre></div>
  
 
   <footer>
