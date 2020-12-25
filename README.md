@@ -1249,7 +1249,7 @@ def problem_20_a(lines):
     return out
 ```
 
-##  Day 21
+##  Day 21: Allergens
 
 ```text
 mxmxvkd kfcds sqjhc nhms (contains dairy, fish)

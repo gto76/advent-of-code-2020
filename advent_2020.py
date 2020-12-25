@@ -1227,7 +1227,7 @@ def problem_20_a(lines):
 
 
 ###
-##  DAY 21
+##  DAY 21: Allergens
 #
 
 IN_21 = \
