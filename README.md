@@ -1329,3 +1329,39 @@ def problem_21_b(lines):
     ingredients_with_allergens = [(ingred, allerg) for ingred, allerg in out.items() if allerg]
     return ','.join(a for a, _ in sorted(ingredients_with_allergens, key=op.itemgetter(1)))
 ```
+
+##  Day 22: Game of Combat
+
+```text
+Player 1:
+9
+2
+6
+3
+1
+
+Player 2:
+5
+8
+4
+7
+10
+```
+
+### Play the small crab in a game of Combat using the two decks you just dealt. What is the winning player's score?
+
+```python
+def problem_22_a(lines):
+    '''306'''
+    import collections, itertools
+    get_deck = lambda cards: collections.deque(int(card) for card in cards)
+    deck_1, deck_2 = (get_deck(a.split('\r')[1:]) for a in '\r'.join(lines).split('\r\r'))
+    while deck_1 and deck_2:
+        card_1, card_2 = deck_1.popleft(), deck_2.popleft()
+        if card_1 > card_2:
+            deck_1.extend([card_1, card_2])
+        else:
+            deck_2.extend([card_2, card_1])
+    winning_deck = deck_1 if deck_1 else deck_2
+    return sum(a*b for a, b in zip(reversed(winning_deck), itertools.count(1)))
+```
