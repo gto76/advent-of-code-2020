@@ -294,7 +294,7 @@ pre.prettyprint {
 
 <div><h3 id="whatdoyougetifyoumultiplytogetherthenumberoftreesencounteredoneachofthelistedslopes">What do you get if you multiply together the number of trees encountered on each of the listed slopes?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_3_b</span><span class="hljs-params">(lines)</span>:</span>
     <span class="hljs-string">'''336'''</span>
-    <span class="hljs-keyword">import</span> collections, functools, itertools, operator
+    <span class="hljs-keyword">import</span> collections, functools, itertools, operator <span class="hljs-keyword">as</span> op
     P = collections.namedtuple(<span class="hljs-string">'P'</span>, <span class="hljs-string">'x y'</span>)
 
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_positions</span><span class="hljs-params">(slope)</span>:</span>
@@ -304,7 +304,7 @@ pre.prettyprint {
     is_tree = <span class="hljs-keyword">lambda</span> p: lines[p.y][p.x % len(lines[<span class="hljs-number">0</span>])] == <span class="hljs-string">'#'</span>
     count_trees = <span class="hljs-keyword">lambda</span> slope: sum(is_tree(p) <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> get_positions(slope))
     slopes = [P(x=<span class="hljs-number">1</span>, y=<span class="hljs-number">1</span>), P(x=<span class="hljs-number">3</span>, y=<span class="hljs-number">1</span>), P(x=<span class="hljs-number">5</span>, y=<span class="hljs-number">1</span>), P(x=<span class="hljs-number">7</span>, y=<span class="hljs-number">1</span>), P(x=<span class="hljs-number">1</span>, y=<span class="hljs-number">2</span>)]
-    <span class="hljs-keyword">return</span> functools.reduce(operator.mul, (count_trees(slope) <span class="hljs-keyword">for</span> slope <span class="hljs-keyword">in</span> slopes))
+    <span class="hljs-keyword">return</span> functools.reduce(op.mul, (count_trees(slope) <span class="hljs-keyword">for</span> slope <span class="hljs-keyword">in</span> slopes))
 </code></pre></div>
 
 <div><h2 id="day4passports"><a href="#day4passports" name="day4passports">#</a>Day 4: Passports</h2><pre><code class="text language-text">ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
@@ -402,10 +402,10 @@ b
 
 <div><h3 id="foreachgroupcountthenumberofquestionstowhicheveryoneansweredyeswhatisthesumofthosecounts">For each group, count the number of questions to which everyone answered "yes". What is the sum of those counts?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_6_b</span><span class="hljs-params">(lines)</span>:</span>
     <span class="hljs-string">'''6'''</span>
-    <span class="hljs-keyword">import</span> functools, operator
+    <span class="hljs-keyword">import</span> functools, operator <span class="hljs-keyword">as</span> op
     groups             = <span class="hljs-string">' '</span>.join(lines).split(<span class="hljs-string">'  '</span>)
     split_group        = <span class="hljs-keyword">lambda</span> group: (set(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> group.split(<span class="hljs-string">' '</span>))
-    get_common_answers = <span class="hljs-keyword">lambda</span> group: functools.reduce(operator.and_, split_group(group))
+    get_common_answers = <span class="hljs-keyword">lambda</span> group: functools.reduce(op.and_, split_group(group))
     <span class="hljs-keyword">return</span> sum(len(get_common_answers(group)) <span class="hljs-keyword">for</span> group <span class="hljs-keyword">in</span> groups)
 </code></pre></div>
 
@@ -1287,13 +1287,78 @@ Tile 3079:
         <span class="hljs-keyword">if</span> sum(side_counter[side] == <span class="hljs-number">1</span> <span class="hljs-keyword">for</span> side <span class="hljs-keyword">in</span> tile.sides) == <span class="hljs-number">4</span>:
             out *= tile.id
     <span class="hljs-keyword">return</span> out
+</code></pre></div>
 
+<div><h2 id="day21"><a href="#day21" name="day21">#</a>Day 21</h2><pre><code class="text language-text">mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
+trh fvjkl sbzzf mxmxvkd (contains dairy)
+sqjhc fvjkl (contains soy)
+sqjhc mxmxvkd sbzzf (contains fish)
+</code></pre></div>
 
+<div><h3 id="determinewhichingredientscannotpossiblycontainanyoftheallergensinyourlisthowmanytimesdoanyofthoseingredientsappear">Determine which ingredients cannot possibly contain any of the allergens in your list. How many times do any of those ingredients appear?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_21_a</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''5'''</span>
+    <span class="hljs-keyword">import</span> collections, functools, itertools, operator <span class="hljs-keyword">as</span> op, re
 
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_food</span><span class="hljs-params">(line)</span>:</span>
+        ingreds, allergs = re.match(<span class="hljs-string">'^(.*) \(contains (.*)\)$'</span>, line).groups()
+        <span class="hljs-keyword">return</span> set(ingreds.split()), set(allergs.split(<span class="hljs-string">', '</span>))
 
+    foods = tuple(get_food(line) <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines)
+    ingredient_counter = collections.Counter(i <span class="hljs-keyword">for</span> ingreds, _ <span class="hljs-keyword">in</span> foods <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> ingreds)
+    ingredients = functools.reduce(op.or_, (ingreds <span class="hljs-keyword">for</span> ingreds, _ <span class="hljs-keyword">in</span> foods))
+    allergens = functools.reduce(op.or_, (allergs <span class="hljs-keyword">for</span> _, allergs <span class="hljs-keyword">in</span> foods))
+    out = dict.fromkeys(ingredients, <span class="hljs-keyword">None</span>)
+    allergen_cycle = itertools.cycle(allergens)
 
-<span class="hljs-comment"># def problem_20_b(lines):</span>
-<span class="hljs-comment">#     ''''''</span>
+    <span class="hljs-keyword">while</span> any(allergs <span class="hljs-keyword">for</span> _, allergs <span class="hljs-keyword">in</span> foods):
+        allergen = next(allergen_cycle)
+        candidate_ingreds = [ingreds <span class="hljs-keyword">for</span> ingreds, allergs <span class="hljs-keyword">in</span> foods <span class="hljs-keyword">if</span> allergen <span class="hljs-keyword">in</span> allergs]
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> candidate_ingreds:
+            <span class="hljs-keyword">continue</span>
+        intersection = functools.reduce(op.and_, candidate_ingreds)
+        <span class="hljs-keyword">if</span> len(intersection) != <span class="hljs-number">1</span>:
+            <span class="hljs-keyword">continue</span>
+        ingredient = intersection.pop()
+        out[ingredient] = allergen
+        <span class="hljs-keyword">for</span> ingreds, allergs <span class="hljs-keyword">in</span> foods:
+            ingreds.discard(ingredient)
+            allergs.discard(allergen)
+
+    ingredients_without_allergens = [ingred <span class="hljs-keyword">for</span> ingred, allerg <span class="hljs-keyword">in</span> out.items() <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> allerg]
+    <span class="hljs-keyword">return</span> sum(ingredient_counter[a] <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> ingredients_without_allergens)
+</code></pre></div>
+
+<div><h3 id="timetostockyourraftwithsupplieswhatisyourcanonicaldangerousingredientlist">Time to stock your raft with supplies. What is your canonical dangerous ingredient list?</h3><pre><code class="python language-python hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">problem_21_b</span><span class="hljs-params">(lines)</span>:</span>
+    <span class="hljs-string">'''mxmxvkd,sqjhc,fvjkl'''</span>
+    <span class="hljs-keyword">import</span> collections, functools, itertools, operator <span class="hljs-keyword">as</span> op, re
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_food</span><span class="hljs-params">(line)</span>:</span>
+        ingreds, allergs = re.match(<span class="hljs-string">'^(.*) \(contains (.*)\)$'</span>, line).groups()
+        <span class="hljs-keyword">return</span> set(ingreds.split()), set(allergs.split(<span class="hljs-string">', '</span>))
+
+    foods = tuple(get_food(line) <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines)
+    ingredient_counter = collections.Counter(i <span class="hljs-keyword">for</span> ingreds, _ <span class="hljs-keyword">in</span> foods <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> ingreds)
+    ingredients = functools.reduce(op.or_, (ingreds <span class="hljs-keyword">for</span> ingreds, _ <span class="hljs-keyword">in</span> foods))
+    allergens = functools.reduce(op.or_, (allergs <span class="hljs-keyword">for</span> _, allergs <span class="hljs-keyword">in</span> foods))
+    out = dict.fromkeys(ingredients, <span class="hljs-keyword">None</span>)
+    allergen_cycle = itertools.cycle(allergens)
+
+    <span class="hljs-keyword">while</span> any(allergs <span class="hljs-keyword">for</span> _, allergs <span class="hljs-keyword">in</span> foods):
+        allergen = next(allergen_cycle)
+        candidate_ingreds = [ingreds <span class="hljs-keyword">for</span> ingreds, allergs <span class="hljs-keyword">in</span> foods <span class="hljs-keyword">if</span> allergen <span class="hljs-keyword">in</span> allergs]
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> candidate_ingreds:
+            <span class="hljs-keyword">continue</span>
+        intersection = functools.reduce(op.and_, candidate_ingreds)
+        <span class="hljs-keyword">if</span> len(intersection) != <span class="hljs-number">1</span>:
+            <span class="hljs-keyword">continue</span>
+        ingredient = intersection.pop()
+        out[ingredient] = allergen
+        <span class="hljs-keyword">for</span> ingreds, allergs <span class="hljs-keyword">in</span> foods:
+            ingreds.discard(ingredient)
+            allergs.discard(allergen)
+
+    ingredients_with_allergens = [(ingred, allerg) <span class="hljs-keyword">for</span> ingred, allerg <span class="hljs-keyword">in</span> out.items() <span class="hljs-keyword">if</span> allerg]
+    <span class="hljs-keyword">return</span> <span class="hljs-string">','</span>.join(a <span class="hljs-keyword">for</span> a, _ <span class="hljs-keyword">in</span> sorted(ingredients_with_allergens, key=op.itemgetter(<span class="hljs-number">1</span>)))
 </code></pre></div>
  
 

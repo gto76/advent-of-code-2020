@@ -122,7 +122,7 @@ def problem_3_a(lines):
 def problem_3_b(lines):
     '''What do you get if you multiply together the number of trees encountered on each of the
     listed slopes? 336'''
-    import collections, functools, itertools, operator
+    import collections, functools, itertools, operator as op
     P = collections.namedtuple('P', 'x y')
 
     def get_positions(slope):
@@ -132,7 +132,7 @@ def problem_3_b(lines):
     is_tree = lambda p: lines[p.y][p.x % len(lines[0])] == '#'
     count_trees = lambda slope: sum(is_tree(p) for p in get_positions(slope))
     slopes = [P(x=1, y=1), P(x=3, y=1), P(x=5, y=1), P(x=7, y=1), P(x=1, y=2)]
-    return functools.reduce(operator.mul, (count_trees(slope) for slope in slopes))
+    return functools.reduce(op.mul, (count_trees(slope) for slope in slopes))
 
 
 ###
@@ -247,10 +247,10 @@ def problem_6_a(lines):
 def problem_6_b(lines):
     '''For each group, count the number of questions to which everyone answered "yes". What is
     the sum of those counts? 6'''
-    import functools, operator
+    import functools, operator as op
     groups             = ' '.join(lines).split('  ')
     split_group        = lambda group: (set(a) for a in group.split(' '))
-    get_common_answers = lambda group: functools.reduce(operator.and_, split_group(group))
+    get_common_answers = lambda group: functools.reduce(op.and_, split_group(group))
     return sum(len(get_common_answers(group)) for group in groups)
 
 
@@ -1226,11 +1226,83 @@ def problem_20_a(lines):
     return out
 
 
+###
+##  DAY 21
+#
+
+IN_21 = \
+'''mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
+trh fvjkl sbzzf mxmxvkd (contains dairy)
+sqjhc fvjkl (contains soy)
+sqjhc mxmxvkd sbzzf (contains fish)'''
 
 
+def problem_21_a(lines):
+    '''Determine which ingredients cannot possibly contain any of the allergens in your list.
+    How many times do any of those ingredients appear? 5'''
+    import collections, functools, itertools, operator as op, re
 
-# def problem_20_b(lines):
-#     ''''''
+    def get_food(line):
+        ingreds, allergs = re.match('^(.*) \(contains (.*)\)$', line).groups()
+        return set(ingreds.split()), set(allergs.split(', '))
+
+    foods = tuple(get_food(line) for line in lines)
+    ingredient_counter = collections.Counter(i for ingreds, _ in foods for i in ingreds)
+    ingredients = functools.reduce(op.or_, (ingreds for ingreds, _ in foods))
+    allergens = functools.reduce(op.or_, (allergs for _, allergs in foods))
+    out = dict.fromkeys(ingredients, None)
+    allergen_cycle = itertools.cycle(allergens)
+    
+    while any(allergs for _, allergs in foods):
+        allergen = next(allergen_cycle)
+        candidate_ingreds = [ingreds for ingreds, allergs in foods if allergen in allergs]
+        if not candidate_ingreds:
+            continue
+        intersection = functools.reduce(op.and_, candidate_ingreds)
+        if len(intersection) != 1:
+            continue
+        ingredient = intersection.pop()
+        out[ingredient] = allergen
+        for ingreds, allergs in foods:
+            ingreds.discard(ingredient)
+            allergs.discard(allergen)
+
+    ingredients_without_allergens = [ingred for ingred, allerg in out.items() if not allerg]
+    return sum(ingredient_counter[a] for a in ingredients_without_allergens)
+
+
+def problem_21_b(lines):
+    '''Time to stock your raft with supplies. What is your canonical dangerous ingredient
+    list? mxmxvkd,sqjhc,fvjkl'''
+    import collections, functools, itertools, operator as op, re
+
+    def get_food(line):
+        ingreds, allergs = re.match('^(.*) \(contains (.*)\)$', line).groups()
+        return set(ingreds.split()), set(allergs.split(', '))
+
+    foods = tuple(get_food(line) for line in lines)
+    ingredient_counter = collections.Counter(i for ingreds, _ in foods for i in ingreds)
+    ingredients = functools.reduce(op.or_, (ingreds for ingreds, _ in foods))
+    allergens = functools.reduce(op.or_, (allergs for _, allergs in foods))
+    out = dict.fromkeys(ingredients, None)
+    allergen_cycle = itertools.cycle(allergens)
+    
+    while any(allergs for _, allergs in foods):
+        allergen = next(allergen_cycle)
+        candidate_ingreds = [ingreds for ingreds, allergs in foods if allergen in allergs]
+        if not candidate_ingreds:
+            continue
+        intersection = functools.reduce(op.and_, candidate_ingreds)
+        if len(intersection) != 1:
+            continue
+        ingredient = intersection.pop()
+        out[ingredient] = allergen
+        for ingreds, allergs in foods:
+            ingreds.discard(ingredient)
+            allergs.discard(allergen)
+
+    ingredients_with_allergens = [(ingred, allerg) for ingred, allerg in out.items() if allerg]
+    return ','.join(a for a, _ in sorted(ingredients_with_allergens, key=op.itemgetter(1)))
 
 
 # ###
